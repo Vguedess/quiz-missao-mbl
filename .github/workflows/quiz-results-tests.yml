@@ -1,7 +1,7 @@
 name: Quiz — score & storage checks
 on:
   push:
-    branches: [feature/analytics-postgres]
+    branches: [main, feature/analytics-postgres]
   pull_request:
     paths:
       - '**/*.js'

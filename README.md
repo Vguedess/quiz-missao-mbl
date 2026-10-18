@@ -1,63 +1,76 @@
-# Radar de Ideias — Missão & MBL
+# Radar de Ideias — Quiz Missão & MBL
 
-Projeto independente de questionário de afinidade política.
+Questionário político independente criado por V. Guedes.
 
-**Site conectado ao GitHub:** https://quiz-missao-mbl-github.vercel.app/
+**Site de produção:** https://quiz-missao-mbl-github.vercel.app/ (poderá ser renomeado para quiz-missao-mbl.vercel.app após a exclusão do projeto Vercel duplicado).
 
-**Criado por V. Guedes.** Canal: https://www.youtube.com/@vguedess · X: https://x.com/vguedessa.
-
-O site evita informar antecipadamente o total de afirmações. Oferece espaço para apoio voluntário por Pix com botão de copiar chave. As quantidades abaixo são documentação interna para manutenção.
+**Autor:** https://www.youtube.com/@vguedess · https://x.com/vguedessa
 
 ## Conteúdo
 
-- **118 afirmações** apresentadas em ordem aleatória.
-- **105 questões programáticas** com base nos capítulos do *Livro Amarelo*.
-- **13 questões de cultura política** associadas ao universo MBL, incluindo a pergunta especial “Prendeu, Matou?”.
-- Resultado **Missão**: considera todas as 118 afirmações aprovadas.
-- Resultado **MBL**: considera exclusivamente as 13 questões culturais.
-- **11 escalas personalizadas**, além da pontuação padrão. A pergunta bônus histórica 119 está arquivada fora do quiz.
+- **118 afirmações** aprovadas, embaralhadas por sessão.
+- **105 programáticas** do Livro Amarelo e **13 culturais** relacionadas ao MBL.
+- **Índice Missão:** pontua todas as 118 afirmações.
+- **Índice MBL:** pontua somente as 13 afirmações culturais.
+- **11 curvas personalizadas** e curvas padrão por direção.
+- A referência de 100% usa exclusivamente a resposta **moderada** (“Concordo” ou “Discordo” alinhado) para cada questão respondida.
+- “Não sei” é excluído de numerador e denominador; “Neutro” entra no denominador com pontuação zero.
+- Índices não são limitados a 0–100%; valores superiores ou negativos são admitidos.
+- Resultados por capítulos e faixas editoriais.
+- Identificação por X, Instagram, nome ou anonimato.
+- Consentimento opcional, desmarcado inicialmente.
 
-## Como se calcula a pontuação
+A pergunta experimental 119 foi mantida em `archive/bonus-question-119.json` e não participa da pontuação.
 
-Cada índice é `100 × pontos obtidos / pontos de referência`. O denominador usa a pontuação de **Concordo** ou **Discordo** conforme a direção considerada alinhada de cada afirmação, inclusive quando a escala é especial.
+## Armazenamento **nativo da Vercel**, sem PostgreSQL externo
 
-- Respostas **Não sei** não contam para o numerador nem para o denominador.
-- Respostas **Neutro** valem zero e contam para o denominador.
-- Resultados podem ultrapassar 100% ou ser negativos.
-- As afirmações do MBL são contabilizadas nos dois resultados; as programáticas só no resultado Missão.
+Este site usa **Vercel Blob privado**, que tem franquia no plano Hobby. Nenhuma conta de Neon, Supabase ou banco SQL é necessária.
 
-## Tecnologia
+Cada resposta autorizada é gravada como um objeto JSON **privado e imutável**; a identidade é armazenada apenas dentro do arquivo privado. O nome do arquivo contém somente um identificador aleatório e os quatro números necessários para calcular médias (pontos e referências de Missão/MBL), nunca o @, nome ou texto das respostas. `/api/stats` calcula as médias pela listagem de metadados privados. O endpoint é cacheado por 15 minutos para economizar operações e evitar consultas desnecessárias. `/api/delete` permite a exclusão mediante posse do ID de tentativa aleatório salvo no navegador.
 
-Site responsivo (HTML, CSS e JavaScript) com rotas opcionais de persistência em Vercel Functions. O progresso é armazenado localmente pelo navegador.
+**Limitação:** Blob é armazenamento de objetos, não banco transacional. Essa arquitetura é adequada a um quiz inicial de pequeno volume; com muitos participantes, a listagem repetida e as cotas de operações poderão exigir outra arquitetura. As médias são estatísticas de participação voluntária, não uma amostra representativa da população.
 
-Para desenvolver localmente:
+### Conectar o Blob uma única vez
 
-```bash
-python -m http.server 8080
+1. Acesse **Vercel > Beyond Curve > projeto `quiz-missao-mbl-github` > Storage**.
+2. Escolha **Blob** (primeira opção nativa) e clique para criar novo armazenamento.
+3. Selecione obrigatoriamente **Private**, não **Public**. Arquivos guardam respostas e podem revelar opinião política.
+4. Conecte o armazenamento ao projeto e selecione **Production** e **Preview**.
+5. Confirme a conexão. A Vercel adiciona `BLOB_STORE_ID` e autenticação automática OIDC (ou token legado de leitura e gravação) ao projeto.
+6. Gere novo deploy (ou faça uma atualização no GitHub). **Não há SQL, migração ou token manual a colar.**
+
+Enquanto o armazenamento não estiver conectado, o quiz funciona localmente e as APIs informam indisponibilidade; **não há simulação de médias ou gravação falsa**.
+
+## Privacidade
+
+As respostas políticas são potencialmente **dados pessoais sensíveis**. A gravação depende de consentimento separado e opcional. Sem autorização, o resultado continua no dispositivo e não entra na estatística agregada.
+
+As participações não aparecem nominalmente. Quem autorizou e salvou pode solicitar **apagamento pelo próprio quiz**, no botão “Apagar meu registro”. Essa exclusão usa o identificador aleatório salvo no navegador. A indisponibilidade ou perda do dispositivo pode impedir o uso desse botão; antes do lançamento público deve existir um canal de contato para pedidos de exclusão e política de privacidade adequada à LGPD.
+
+Não exponha credenciais, tokens ou o armazenamento em modo público. Evite guardar dados de identificação sem necessidade. Para maior escala, implemente proteção contra envios automatizados e manipulação estatística.
+
+## Organização
+
+```text
+index.html / styles.css / app.js   Interface e fluxo do quiz
+questions.js                       Afirmações e 11 curvas especiais
+lib/scoring.js                     Pontuação validada
+lib/bands.js                       Texto das 8 faixas
+lib/blob-store.js                  Armazenamento privado e estatísticas
+api/submit.js                      Registro autorizado
+api/stats.js                       Médias agregadas
+api/delete.js                      Remoção individual
+tests/scoring.test.js              Testes de regressão
 ```
 
-Abra `http://localhost:8080`.
+Para executar testes:
 
-## Apoio voluntário
+```bash
+npm install
+npm test
+npm run check
+```
 
-Chave Pix disponibilizada pelo criador: `vguedes.eth@mail3.me`. O apoio é opcional e não influencia a pontuação.
+O frontend sem API pode rodar em um servidor estático. As APIs dependem de Vercel Functions e do Blob privado conectado.
 
-## Aviso
-
-O quiz é um projeto independente, não oficial e não constitui instrumento psicométrico validado. Não representa endosso institucional do Partido Missão ou do MBL.
-
-
-## Participações e médias (novo)
-
-- Tela de identificação opcional: X, Instagram, nome ou participação anônima.
-- Consentimento explícito e desmarcado inicialmente para salvar respostas e resultados (opiniões políticas podem ser dados pessoais sensíveis).
-- Faixas narrativas de resultado e médias agregadas, quando o banco estiver configurado.
-- `api/submit.js` valida e recalcula toda pontuação no servidor; `api/stats.js` consulta médias no banco; `lib/scoring.js` centraliza pontuação.
-- Migração SQL: `db/schema.sql`, testes: `npm test`.
-- Sem consentimento ou sem banco configurado, o questionário é utilizável e armazena progresso apenas no dispositivo.
-
-### Banco Vercel Marketplace
-
-O produto legado Vercel Postgres foi descontinuado. A integração de banco indicada é **Neon Postgres via Vercel Marketplace**, com variável `DATABASE_URL` vinculada ao projeto Vercel. Depois de provisionar a conexão e executar `db/schema.sql` no editor SQL do banco, os endpoints passam a registrar participações e calcular as médias sem mudanças no código. Enquanto isso, o frontend informa corretamente que as estatísticas estão indisponíveis.
-
-**Situação de acesso:** a conta Vercel devolveu HTTP 403 quando solicitada a provisionar integrações e armazenamento. Por isso, nenhum banco físico foi criado automaticamente e nenhuma média fictícia é exibida.
+Projeto independente, sem endosso oficial do Partido Missão ou do MBL.

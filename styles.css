@@ -233,3 +233,12 @@ button,.answer{touch-action:manipulation}
   #start.primary{font-size:18px;padding:15px 17px}
 }
 @media(prefers-reduced-motion:reduce){#start.primary{transition:none}}
+
+
+/* Card de resultados da abertura, sem títulos e notas redundantes */
+.intro-aside .mini-result:first-child{padding-top:8px}
+.intro-aside .mini-result:last-child{padding-bottom:30px}
+@media(max-width:740px){
+  .intro-aside .mini-result:first-child{padding-top:6px}
+  .intro-aside .mini-result:last-child{padding-bottom:24px}
+}

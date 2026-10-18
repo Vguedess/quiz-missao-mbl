@@ -8,11 +8,11 @@ Questionário político independente criado por V. Guedes.
 
 ## Conteúdo
 
-- **118 afirmações** aprovadas, embaralhadas por sessão.
-- **105 programáticas** do Livro Amarelo e **13 culturais** relacionadas ao MBL.
-- **Índice Missão:** pontua todas as 118 afirmações.
-- **Índice MBL:** pontua somente as 13 afirmações culturais.
-- **11 curvas personalizadas** e curvas padrão por direção.
+- **119 afirmações** incluídas, embaralhadas por sessão.
+- **105 programáticas** do Livro Amarelo e **14 culturais** relacionadas ao MBL.
+- **Índice Missão:** pontua todas as 119 afirmações.
+- **Índice MBL:** pontua somente as 14 afirmações culturais.
+- **12 curvas personalizadas** e curvas padrão por direção.
 - A referência de 100% usa exclusivamente a resposta **moderada** (“Concordo” ou “Discordo” alinhado) para cada questão respondida.
 - “Não sei” é excluído de numerador e denominador; “Neutro” entra no denominador com pontuação zero.
 - Índices não são limitados a 0–100%; valores superiores ou negativos são admitidos.
@@ -20,7 +20,7 @@ Questionário político independente criado por V. Guedes.
 - Identificação por X, Instagram, nome ou anonimato.
 - Consentimento opcional, desmarcado inicialmente.
 
-A pergunta experimental 119 foi mantida em `archive/bonus-question-119.json` e não participa da pontuação.
+A afirmação cultural #119 **“Prendeu, Matou?”** foi integrada ao quiz. A escala exclusiva `[+5, +3, +1, 0, 0, 0, 0, 0]` aplica-se somente a ela; a referência moderada é +3. O arquivo `archive/bonus-question-119.json` mantém a origem histórica dessa regra. Os pesos de #9 a #16 do capítulo 2 não foram alterados.
 
 ## Armazenamento **nativo da Vercel**, sem PostgreSQL externo
 
@@ -53,7 +53,7 @@ Não exponha credenciais, tokens ou o armazenamento em modo público. Evite guar
 
 ```text
 index.html / styles.css / app.js   Interface e fluxo do quiz
-questions.js                       Afirmações e 11 curvas especiais
+questions.js                       Afirmações e 12 curvas especiais
 lib/scoring.js                     Pontuação validada
 lib/bands.js                       Texto das 8 faixas
 lib/blob-store.js                  Armazenamento privado e estatísticas
@@ -81,7 +81,7 @@ Projeto independente, sem endosso oficial do Partido Missão ou do MBL.
 - Título da aba: **Quiz Missão/MBL | Guedes**, com favicon SVG `G` em `/favicon.svg`.
 - O clique no cabeçalho `VG` abre a página inicial **sem excluir o progresso**. O botão de retomada abre o questionário inacabado ou o resultado completo.
 - Identificação social opcional na **home**, mesmo depois de responder: X / Instagram. O @ fica salvo no navegador e aparece no cartão pessoal ao retornar aos resultados. Alterar o @ localmente não modifica retroativamente um registro já armazenado no servidor.
-- Cartão editorial `#shareCard`: duas porcentagens grandes, Missão em amarelo e MBL em verde-menta, título da faixa, identificação opcional e endereço oficial. Os índices não são limitados em 100%.
+- Cartão editorial `#affinityCard`: duas porcentagens grandes, Missão em amarelo e MBL em verde-menta, título da faixa, identificação opcional e endereço oficial. Os índices não são limitados em 100%.
 - `share.js` gera PNG em 1080×1350 no próprio dispositivo. Em navegadores compatíveis, oferece compartilhamento nativo; nos demais, download direto. Nenhuma imagem individual é enviada ao servidor.
 - Resultado MBL inclui **explicação própria**, independente do texto de Missão.
 - As **seis imagens JPG já estão presentes** em `results/imagens/`, mantendo seus nomes originais. O mapeamento completo de faixas e URLs está em [`results/imagens/README.md`](results/imagens/README.md). O cartão de resultado e o arquivo PNG exportado usam as fotos por faixa, enquanto as artes vetoriais `/results/mission-sigil.svg` e `/results/mbl-culture.svg` permanecem como fallback. O teste `tests/result-images.test.js` valida nomes reais, assinaturas JPEG e pontuações.

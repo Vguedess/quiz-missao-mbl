@@ -1,6 +1,6 @@
 import { getBand } from "./lib/bands.js";
-import { initShare } from "./share.js?v=result-layout-v5";
-import {questions, specialScores} from "./questions.js";
+import { initShare } from "./share.js?v=quiz-119-v1";
+import {questions, specialScores} from "./questions.js?v=quiz-119-v1";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[4,2,1,0,-1,-2,-4,0];
 const KEY="radar-ideias-v1";
@@ -36,8 +36,14 @@ function load(){
     // Preserva o progresso de quem iniciou o questionário antes da nova pergunta cultural.
     const isLegacy=saved.order.length===total-1&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<total)&&new Set(saved.order).size===total-1;
     if(isLegacy){
+      // Preserve every previous answer, and let the participant answer ONLY #119.
+      const previouslyComplete=Object.keys(saved.answers).length===total-1;
       saved.order.push(total);
-      if(saved.phase==="result"){saved.phase="quiz";saved.cursor=total-1;}
+      if(previouslyComplete)saved.cursor=total-1;
+      if(saved.phase==="result")saved.phase="quiz";
+      // A past submission does NOT include this new question; keep its
+      // existing deletion capability and do not falsely claim a new submission.
+      if(saved.submission==="saved")saved.legacySaved=true;
     }
     const valid=saved.order.length===total&&new Set(saved.order).size===total&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<=total);
     if(valid&&saved.cursor>=0&&saved.cursor<total){
@@ -190,7 +196,12 @@ function renderExtras(){
   shareUI?.render(calculate("missao"),calculate("mbl"));
   void updateParticipantStats();
   if(state.consent){
-    if(state.submission==="saved"){$("deleteParticipation").hidden=false;$("saveFeedback").textContent="Resultado registrado anteriormente com seu consentimento.";}
+    if(state.submission==="saved"){
+      $("deleteParticipation").hidden=false;
+      $("saveFeedback").textContent=state.legacySaved
+        ?"Seu registro anterior corresponde à versão de 118 questões. Esta nova resposta não foi enviada ao servidor; você pode excluir o registro antigo abaixo."
+        :"Resultado registrado anteriormente com seu consentimento.";
+    }
     else void submitParticipation();
   }else $("saveFeedback").textContent="Você não autorizou armazenar as respostas. Seu resultado permanece neste dispositivo.";
 }

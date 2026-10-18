@@ -81,8 +81,9 @@ async function makeCanvas(missao,mbl,profile){
  c.textAlign="right";c.font="800 20px 'Space Grotesk',Arial";c.fillStyle="#f9da6a";c.fillText("EDIÇÃO 2026",1012,100);c.textAlign="left";
  c.fillStyle="#d6b84a";c.fillRect(62,172,956,3);
  const band=getBand(missao.value),title=band?SHORT_HEADLINES[band.id]:"RESULTADO INDEFINIDO";
- const imageUrl=$("shareMissionImage").currentSrc||$("shareMissionImage").src;
- const img=await loadImage(imageUrl);
+ // Use the exact band asset, even if the page image has not finished loading.
+ // This keeps downloaded PNGs consistent with the visible result.
+ const img=await loadImage(band?.image||"/results/mission-sigil.svg")||await loadImage("/results/mission-sigil.svg");
  if(img)drawCover(c,img,64,220,425,435);
  else{c.fillStyle="#292a26";rounded(c,64,220,425,435,25);c.fill();c.font="900 250px Arial";c.fillStyle="#ecca4c";c.fillText("✦",161,510);}
  c.font="800 22px 'Space Grotesk',Arial";c.fillStyle="#ffe779";c.fillText("MINHAS POSIÇÕES",535,300);

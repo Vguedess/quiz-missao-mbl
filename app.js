@@ -1,3 +1,4 @@
+import { getBand } from "./lib/bands.js";
 import {questions, specialScores} from "./questions.js";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[4,2,1,0,-1,-2,-4,0];
@@ -32,13 +33,19 @@ function load(){
   }catch{}
 }
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}}
-function reveal(phase){clearAdvance();["landing","quiz","result"].forEach(id=>$(id).hidden=id!==phase);state.phase=phase;persist();window.scrollTo({top:0,behavior:"instant"})}
+function reveal(phase){clearAdvance();["landing","onboard","quiz","result"].forEach(id=>$(id).hidden=id!==phase);state.phase=phase;persist();window.scrollTo({top:0,behavior:"instant"})}
 function qById(id){return questions[id-1]}
 function score(q,answer){if(answer===7)return 0;const custom=specialScores[q.id];return custom?custom[answer]:base[answer]*q.dir}
 function reference(q){return score(q,q.dir===1?1:5)}
 function calculate(group){const subset=questions.filter(q=>group==="missao"||q.group===group);let actual=0,target=0,known=0,unknown=0,neutral=0;for(const q of subset){const a=state.answers[q.id];if(a===undefined)continue;if(a===7){unknown++;continue}actual+=score(q,a);target+=reference(q);known++;if(a===3)neutral++}return {actual,target,known,unknown,neutral,total:subset.length,value:target>0?actual/target*100:null}}
 function pct(n){return n===null?"—":new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1}).format(n)+"%"}
-function start(){clearAdvance();state={order:shuffle(),answers:{},cursor:0,phase:"quiz"};reveal("quiz");renderQuestion()}
+function start(){
+  clearAdvance();
+  const identityType=$("identityType").value, identityValue=$("identityValue").value.trim();
+  if(identityType!=="anonymous"&&(!identityValue||identityValue.length>60)){$("identityValue").focus();return}
+  state={order:shuffle(),answers:{},cursor:0,phase:"quiz",consent:$("dataConsent").checked,identityType,identityValue:identityType==="anonymous"?"":identityValue,attemptId:crypto.randomUUID(),submission:"idle"};
+  reveal("quiz");renderQuestion();
+}
 const answerTones=["full-agree","agree","partial-agree","neutral","partial-disagree","disagree","full-disagree","unknown"];
 function updateProgress(){
   const done=Object.keys(state.answers).length;
@@ -111,11 +118,71 @@ function renderQuestion(){
 }
 function next(){clearAdvance();const id=state.order[state.cursor];if(state.answers[id]===undefined)return;if(state.cursor===questions.length-1){if(Object.keys(state.answers).length!==questions.length)return;reveal("result");renderResults();return}state.cursor++;persist();renderQuestion()}
 function previous(){clearAdvance();if(state.cursor>0){state.cursor--;persist();renderQuestion()}}
-function renderResults(){const m=calculate("missao"),b=calculate("mbl");$("missaoScore").textContent=pct(m.value);$("mblScore").textContent=pct(b.value);$("missaoCoverage").textContent="Respostas consideradas: "+Math.round(m.known/m.total*100)+"%"+(m.unknown?" · “Não sei” desconsiderado":"");$("mblCoverage").textContent="Respostas consideradas: "+Math.round(b.known/b.total*100)+"%"+(b.unknown?" · “Não sei” desconsiderado":"");const names=[...new Set(questions.map(q=>q.chapter))];const table=$("chapters");table.replaceChildren();for(const name of names){const subset=questions.filter(q=>q.chapter===name);let actual=0,target=0,known=0,unknown=0;for(const q of subset){const a=state.answers[q.id];if(a===7){unknown++;continue}if(a===undefined)continue;actual+=score(q,a);target+=reference(q);known++}const row=document.createElement("div");row.className="chapter-row";const title=document.createElement("div");title.className="chapter-name";title.textContent=name;const value=document.createElement("div");value.className="chapter-score";value.textContent=pct(target?actual/target*100:null);const sub=document.createElement("div");sub.className="chapter-small";sub.textContent=Math.round(100*known/subset.length)+"% das respostas consideradas"+(unknown?" · “Não sei” excluído":"");row.append(title,value,sub);table.append(row)}}
+function renderResults(){const m=calculate("missao"),b=calculate("mbl");$("missaoScore").textContent=pct(m.value);$("mblScore").textContent=pct(b.value);$("missaoCoverage").textContent="Respostas consideradas: "+Math.round(m.known/m.total*100)+"%"+(m.unknown?" · “Não sei” desconsiderado":"");$("mblCoverage").textContent="Respostas consideradas: "+Math.round(b.known/b.total*100)+"%"+(b.unknown?" · “Não sei” desconsiderado":"");const names=[...new Set(questions.map(q=>q.chapter))];const table=$("chapters");table.replaceChildren();for(const name of names){const subset=questions.filter(q=>q.chapter===name);let actual=0,target=0,known=0,unknown=0;for(const q of subset){const a=state.answers[q.id];if(a===7){unknown++;continue}if(a===undefined)continue;actual+=score(q,a);target+=reference(q);known++}const row=document.createElement("div");row.className="chapter-row";const title=document.createElement("div");title.className="chapter-name";title.textContent=name;const value=document.createElement("div");value.className="chapter-score";value.textContent=pct(target?actual/target*100:null);const sub=document.createElement("div");sub.className="chapter-small";sub.textContent=Math.round(100*known/subset.length)+"% das respostas consideradas"+(unknown?" · “Não sei” excluído":"");row.append(title,value,sub);table.append(row)}renderExtras();}
 function download(){const result={method:"Pontuação real ÷ referência moderada × 100",createdAt:new Date().toISOString(),indices:{missao:calculate("missao"),mbl:calculate("mbl")},answers:state.order.map((id,order)=>({questionId:id,order:order+1,chapter:qById(id).chapter,group:qById(id).group,answer:labels[state.answers[id]],points:score(qById(id),state.answers[id])}))};const blob=new Blob([JSON.stringify(result,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="meu-resultado-radar-de-ideias.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),200)}
 $("autoAdvance").checked=autoAdvance;
 $("autoAdvance").addEventListener("change",e=>{autoAdvance=e.target.checked;clearAdvance();try{localStorage.setItem(MOBILE_PREF_KEY,String(autoAdvance))}catch{}});
-$("start").addEventListener("click",start);$("resume").addEventListener("click",()=>{reveal("quiz");renderQuestion()});$("next").addEventListener("click",next);$("prev").addEventListener("click",previous);$("newAttempt").addEventListener("click",start);$("download").addEventListener("click",download);
+$("start").addEventListener("click",()=>reveal("onboard"));$("resume").addEventListener("click",()=>{reveal("quiz");renderQuestion()});$("next").addEventListener("click",next);$("prev").addEventListener("click",previous);$("newAttempt").addEventListener("click",()=>{ $("identityType").value="anonymous"; $("identityValue").value=""; $("dataConsent").checked=false; syncIdentityField(); reveal("onboard"); });$("download").addEventListener("click",download);
+
+function syncIdentityField(){
+  const show=$("identityType").value!=="anonymous";
+  $("identityValue").hidden=!show;$("identityValueLabel").hidden=!show;
+  $("identityValue").placeholder=$("identityType").value==="name"?"Seu nome":"@seuusuario";
+}
+function renderEditorial(){
+  const score=calculate("missao").value,band=getBand(score);
+  $("bandTitle").textContent=band?.title??"Resultado não calculável";
+  $("bandDescription").textContent=band?.description??"Todas as respostas foram marcadas como “Não sei”. É necessário responder ao menos uma afirmação para calcular o índice.";
+  const img=$("bandImage");
+  img.hidden=true;img.removeAttribute("src");img.alt="";
+  if(band?.image){img.onload=()=>{img.hidden=false};img.onerror=()=>{img.hidden=true};img.alt="Imagem ilustrativa do resultado";img.src=band.image}
+}
+function renderStatsNode(values){
+  const box=$("participantsStats");box.replaceChildren();
+  for(const [value,label] of values){
+    const item=document.createElement("div");item.className="participant-stat";
+    const strong=document.createElement("strong");strong.textContent=value;
+    const text=document.createElement("span");text.textContent=label;
+    item.append(strong,text);box.append(item);
+  }
+}
+async function updateParticipantStats(){
+  try{
+    const response=await fetch("/api/stats",{cache:"no-store"});
+    if(!response.ok)throw Error("unavailable");
+    const body=await response.json();
+    if(!body.available)throw Error("unavailable");
+    renderStatsNode([[String(body.count),"RESULTADOS REGISTRADOS"],[pct(body.missao),"MÉDIA DE ADERÊNCIA MISSÃO"],[pct(body.mbl),"MÉDIA DE AFINIDADE MBL"]]);
+  }catch{renderStatsNode([["Estatísticas indisponíveis","O BANCO AINDA NÃO ESTÁ CONECTADO OU ESTÁ TEMPORARIAMENTE INDISPONÍVEL"]])}
+}
+async function submitParticipation(){
+  if(!state.consent||state.submission==="saved"||!state.attemptId)return;
+  $("saveFeedback").textContent="Registrando resultado autorizado...";
+  try{
+    const r=await fetch("/api/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({consent:true,attemptId:state.attemptId,identityType:state.identityType,identityValue:state.identityValue,answers:state.answers})});
+    const result=await r.json().catch(()=>({}));
+    if(!r.ok||!result.saved)throw Error(result.error||"erro");
+    state.submission="saved";persist();
+    $("saveFeedback").textContent="Resultado registrado com seu consentimento.";
+    void updateParticipantStats();
+  }catch{
+    state.submission="unsaved";persist();
+    $("saveFeedback").textContent="O registro no banco não está disponível. Seu resultado continua salvo somente neste dispositivo.";
+  }
+}
+function renderExtras(){
+  renderEditorial();
+  void updateParticipantStats();
+  if(state.consent){
+    if(state.submission==="saved")$("saveFeedback").textContent="Resultado registrado anteriormente com seu consentimento.";
+    else void submitParticipation();
+  }else $("saveFeedback").textContent="Você não autorizou armazenar as respostas. Seu resultado permanece neste dispositivo.";
+}
+$("identityType").addEventListener("change",syncIdentityField);
+$("onboardBack").addEventListener("click",()=>reveal("landing"));
+$("onboardStart").addEventListener("click",start);
+syncIdentityField();
+
 document.addEventListener("keydown",e=>{if(state.phase!=="quiz"||e.altKey||e.ctrlKey||e.metaKey||["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName))return;if(/^[1-8]$/.test(e.key)){const id=state.order[state.cursor];selectAnswer(Number(e.key)-1,{auto:false});e.preventDefault()}else if(e.key==="ArrowLeft"){previous();e.preventDefault()}else if(e.key==="ArrowRight"&&state.answers[state.order[state.cursor]]!==undefined){next();e.preventDefault()}});
 const PIX_KEY="vguedes.eth@mail3.me";
 async function copyPix(btn){

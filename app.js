@@ -1,4 +1,5 @@
 import { getBand } from "./lib/bands.js";
+import { initShare } from "./share.js";
 import {questions, specialScores} from "./questions.js";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[4,2,1,0,-1,-2,-4,0];
@@ -13,6 +14,9 @@ function shouldAutoAdvance(){return autoAdvance&&window.matchMedia(MOBILE_QUERY)
 function goTop(){window.scrollTo({top:0,behavior:"instant"})}
 let state={order:[],answers:{},cursor:0,phase:"landing"};
 const $=id=>document.getElementById(id);
+let shareUI=null;
+function goHome(event){if(event)event.preventDefault();reveal("landing");shareUI?.refreshHome();const hasQuiz=state.order?.length===questions.length;$("resume").hidden=!hasQuiz;if(hasQuiz)$("resume").textContent=Object.keys(state.answers||{}).length===questions.length?"VER MEU RESULTADO →":"RETOMAR ONDE PAREI →";}
+function openOnboard(){shareUI?.prefillOnboard();reveal("onboard");}
 function shuffle(){const a=questions.map(q=>q.id);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function load(){
   try{
@@ -122,7 +126,7 @@ function renderResults(){const m=calculate("missao"),b=calculate("mbl");$("missa
 function download(){const result={method:"Pontuação real ÷ referência moderada × 100",createdAt:new Date().toISOString(),indices:{missao:calculate("missao"),mbl:calculate("mbl")},answers:state.order.map((id,order)=>({questionId:id,order:order+1,chapter:qById(id).chapter,group:qById(id).group,answer:labels[state.answers[id]],points:score(qById(id),state.answers[id])}))};const blob=new Blob([JSON.stringify(result,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="meu-resultado-radar-de-ideias.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),200)}
 $("autoAdvance").checked=autoAdvance;
 $("autoAdvance").addEventListener("change",e=>{autoAdvance=e.target.checked;clearAdvance();try{localStorage.setItem(MOBILE_PREF_KEY,String(autoAdvance))}catch{}});
-$("start").addEventListener("click",()=>reveal("onboard"));$("resume").addEventListener("click",()=>{reveal("quiz");renderQuestion()});$("next").addEventListener("click",next);$("prev").addEventListener("click",previous);$("newAttempt").addEventListener("click",()=>{ $("identityType").value="anonymous"; $("identityValue").value=""; $("dataConsent").checked=false; syncIdentityField(); reveal("onboard"); });$("download").addEventListener("click",download);
+$("start").addEventListener("click",openOnboard);$("resume").addEventListener("click",()=>{if(Object.keys(state.answers||{}).length===questions.length){reveal("result");renderResults()}else{reveal("quiz");renderQuestion()}});$("next").addEventListener("click",next);$("prev").addEventListener("click",previous);$("newAttempt").addEventListener("click",()=>{$("dataConsent").checked=false;openOnboard()});$("download").addEventListener("click",download);
 
 function syncIdentityField(){
   const show=$("identityType").value!=="anonymous";
@@ -135,7 +139,7 @@ function renderEditorial(){
   $("bandDescription").textContent=band?.description??"Todas as respostas foram marcadas como “Não sei”. É necessário responder ao menos uma afirmação para calcular o índice.";
   const img=$("bandImage");
   img.hidden=true;img.removeAttribute("src");img.alt="";
-  if(band?.image){img.onload=()=>{img.hidden=false};img.onerror=()=>{img.hidden=true};img.alt="Imagem ilustrativa do resultado";img.src=band.image}
+  img.onload=()=>{img.hidden=false};img.onerror=()=>{img.onerror=null;img.src="/results/mission-sigil.svg"};img.alt="Arte temática do resultado da Missão";img.src=band?.image||"/results/mission-sigil.svg";
 }
 function renderStatsNode(values){
   const box=$("participantsStats");box.replaceChildren();
@@ -173,6 +177,7 @@ async function submitParticipation(){
 }
 function renderExtras(){
   renderEditorial();
+  shareUI?.render(calculate("missao"),calculate("mbl"));
   void updateParticipantStats();
   if(state.consent){
     if(state.submission==="saved"){$("deleteParticipation").hidden=false;$("saveFeedback").textContent="Resultado registrado anteriormente com seu consentimento.";}
@@ -201,9 +206,11 @@ async function removeMyParticipation(){
 $("deleteParticipation").addEventListener("click",()=>void removeMyParticipation());
 
 $("identityType").addEventListener("change",syncIdentityField);
-$("onboardBack").addEventListener("click",()=>reveal("landing"));
+$("onboardBack").addEventListener("click",goHome);
 $("onboardStart").addEventListener("click",start);
 syncIdentityField();
+shareUI=initShare({readState:()=>state,patchState:changes=>{Object.assign(state,changes);persist()},goHome});
+shareUI.refreshHome();
 
 document.addEventListener("keydown",e=>{if(state.phase!=="quiz"||e.altKey||e.ctrlKey||e.metaKey||["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName))return;if(/^[1-8]$/.test(e.key)){const id=state.order[state.cursor];selectAnswer(Number(e.key)-1,{auto:false});e.preventDefault()}else if(e.key==="ArrowLeft"){previous();e.preventDefault()}else if(e.key==="ArrowRight"&&state.answers[state.order[state.cursor]]!==undefined){next();e.preventDefault()}});
 const PIX_KEY="vguedes.eth@mail3.me";
@@ -237,4 +244,4 @@ document.querySelectorAll(".pix-key").forEach(input=>input.addEventListener("foc
 
 window.addEventListener("resize",()=>{if(state.phase==="quiz")requestAnimationFrame(fitQuestionText)},{passive:true});
 if(document.fonts?.ready)document.fonts.ready.then(()=>{if(state.phase==="quiz")fitQuestionText()});
-load();if(state.order.length===questions.length){$("resume").hidden=false;if(state.phase==="quiz"){reveal("quiz");renderQuestion()}else if(state.phase==="result"){reveal("result");renderResults()}}
+load();shareUI.refreshHome();if(state.order.length===questions.length){$("resume").hidden=false;if(state.phase==="quiz"){reveal("quiz");renderQuestion()}else if(state.phase==="result"){reveal("result");renderResults()}else if(state.phase==="landing"){goHome()}}

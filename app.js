@@ -54,13 +54,16 @@ function fitQuestionText(){
   const heightLimit=frame.clientHeight-5;
   if(heading.scrollHeight<=heightLimit)return;
   // Redimensiona o enunciado sem alterar a altura da área de respostas.
-  let low=13,high=original,best=13;
-  for(let i=0;i<12;i++){
+  // Preserva palavras inteiras e encontra a maior fonte que cabe na área fixa.
+  const minimum=window.innerWidth<=740?13:15;
+  let low=minimum,high=original,best=minimum;
+  for(let i=0;i<13;i++){
     const middle=(low+high)/2;
     heading.style.fontSize=middle.toFixed(2)+"px";
-    if(heading.scrollHeight<=heightLimit){best=middle;low=middle}else{high=middle}
+    if(heading.scrollHeight<=heightLimit&&heading.scrollWidth<=frame.clientWidth+1){best=middle;low=middle}else{high=middle}
   }
   heading.style.fontSize=best.toFixed(2)+"px";
+  frame.scrollTop=0;
 }
 function selectAnswer(index,{auto=true}={}){
   clearAdvance();

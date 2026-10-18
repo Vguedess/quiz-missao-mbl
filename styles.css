@@ -100,7 +100,7 @@ button,.answer{touch-action:manipulation}
 .q-pane{min-height:0}
 .q-pane .q-overline{margin:0 0 11px}
 .question-frame{height:205px;display:flex;align-items:center;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#445063 transparent}
-.question-frame #question{margin:0!important;min-height:0!important;height:auto;width:100%;flex:0 0 100%;font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.05vw,37px);font-weight:600;letter-spacing:-.8px;line-height:1.2;overflow-wrap:break-word;hyphens:auto}
+.question-frame #question{margin:0!important;min-height:0!important;height:auto;width:100%;flex:0 0 100%;font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.05vw,37px);font-weight:600;letter-spacing:-.8px;line-height:1.2;overflow-wrap:normal;word-break:normal;hyphens:none;-webkit-hyphens:none}
 .q-pane .q-guidance{margin:0 0 16px;line-height:1.4}
 .answers{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
 /* Gradiente conceitual do verde (concordância) ao vermelho (discordância). */
@@ -291,3 +291,23 @@ button,.answer{touch-action:manipulation}
   .topbar .header-social-link{width:40px;height:40px;min-height:40px}
 }
 @media(prefers-reduced-motion:reduce){.topbar .header-social-link{transition:none}}
+
+/* Sempre preserve palavras inteiras. Também vale para navegadores móveis. */
+#quiz .question-frame #question{
+  -webkit-hyphens:none;
+  -moz-hyphens:none;
+  hyphens:none;
+  word-break:normal;
+  overflow-wrap:normal;
+  white-space:normal;
+  text-wrap:wrap;
+}
+@media(max-width:740px){
+  #quiz .question-frame #question{
+    -webkit-hyphens:none;
+    hyphens:none;
+    word-break:normal;
+    overflow-wrap:normal;
+    white-space:normal;
+  }
+}

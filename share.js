@@ -21,9 +21,9 @@ function normalizedHandle(v){
 }
 function mblInterpretation(percent){
  if(percent===null)return ["Afinidade não calculável","Você marcou “Não sei” em todas as afirmações culturais. Não há uma referência suficiente para interpretar este índice."];
- if(percent<0)return ["Distância dos princípios culturais","Sua pontuação aponta discordâncias intensas com posições culturais usadas como referência neste questionário. O índice avalia apenas as 16 afirmações culturais, não suas opiniões sobre todo o programa."];
+ if(percent<0)return ["Distância dos princípios culturais","Sua pontuação aponta discordâncias intensas com posições culturais usadas como referência neste questionário. O índice avalia apenas as 18 afirmações culturais, não suas opiniões sobre todo o programa."];
  if(percent<25)return ["Afinidade cultural muito baixa","Você apresenta poucas convergências com os princípios culturais avaliados. As respostas indicam divergências importantes sobre formação intelectual, compromisso político e convivência com opiniões diferentes."];
- if(percent<50)return ["Afinidade cultural parcial","Você compartilha alguns valores culturais, mas também apresenta diferenças relevantes. O conjunto de respostas aponta concordâncias e discordâncias dentro das 16 afirmações do MBL."];
+ if(percent<50)return ["Afinidade cultural parcial","Você compartilha alguns valores culturais, mas também apresenta diferenças relevantes. O conjunto de respostas aponta concordâncias e discordâncias dentro das 18 afirmações do MBL."];
  if(percent<76)return ["Afinidade cultural significativa","A maioria dos pontos avaliados apresenta convergência com a referência cultural do movimento. Ainda existem discordâncias que tornam seu resultado diferente de um alinhamento integral."];
  if(percent<101)return ["Alta afinidade cultural","Você apresenta forte proximidade com os valores culturais usados como referência. Isso inclui aspectos como formação intelectual, autonomia crítica e compromisso com princípios políticos."];
  return ["Afinidade cultural muito intensa","Seu índice ultrapassou a referência de 100%, definida pelas respostas moderadas alinhadas. Isso revela intensidade das concordâncias neste conjunto cultural — não significa que exista uma pontuação máxima de 100%."];

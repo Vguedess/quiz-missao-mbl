@@ -564,3 +564,46 @@ button,.answer{touch-action:manipulation}
  #result .result-grid .score-label{font-size:16px}
  #result .result-grid .score-card{min-height:132px}
 }
+
+/* Etapa 0 — instruções sem pontuação, antes das afirmações */
+.guide-shell{max-width:850px;margin:62px auto 110px}
+.guide-shell h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(45px,6vw,74px);line-height:1.08;letter-spacing:-2.8px;margin:24px 0 18px}
+.guide-shell h1 em{font-style:normal;color:var(--yellow)}
+.guide-lede{max-width:770px;font-size:16px;color:#c2cbd8;line-height:1.7;margin:0 0 27px}
+.guide-lede strong{color:#fff0bc}
+.guide-example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.guide-example{border:1px solid #4a5362;background:linear-gradient(150deg,#222a38,#161d29);padding:24px 26px 25px;border-radius:12px}
+.guide-example-strong{border-color:#d9bf6280;background:linear-gradient(150deg,#332f24,#1c212a)}
+.guide-number{font:800 clamp(43px,7vw,72px)/1.1 'Space Grotesk',sans-serif;color:var(--mint);letter-spacing:-3px}
+.guide-number span{font-size:.49em;letter-spacing:-1px;padding-left:4px}
+.guide-example-strong .guide-number{color:var(--yellow)}
+.guide-example h2{font:700 17px/1.35 'Space Grotesk',sans-serif;margin:17px 0 10px;color:#fff}
+.guide-example p{font-size:14px;color:#b6c0cf;line-height:1.65;margin:0}
+.guide-example p strong{color:#fff}
+.guide-calibration{border-left:3px solid var(--yellow);padding:13px 17px;margin:18px 0 25px;background:#1b2230;font-size:14px;color:#bdc6d2;line-height:1.65}
+.guide-calibration strong{color:#fff1b2}
+.guide-differences{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.guide-differences article{display:flex;gap:15px;padding:23px 21px;border:1px solid #394353;border-radius:11px;background:#151c28}
+.guide-marker{display:flex;align-items:center;justify-content:center;flex:0 0 39px;height:39px;border:1px solid #68788d;border-radius:9px;font:800 23px 'Space Grotesk',sans-serif;color:#d7e3ef}
+.guide-differences h2{font:700 20px 'Space Grotesk',sans-serif;color:#f4f2ed;margin:4px 0 9px}
+.guide-differences p{font-size:14px;line-height:1.6;color:#bac3d0;margin:0}
+.guide-differences strong{color:#f6e49e}
+.guide-actions{border-top:1px solid #3d4756;margin-top:24px;padding-top:24px}
+.guide-actions>p{font-size:14px;line-height:1.6;color:#aab5c4;margin:0 0 19px}
+.guide-buttons{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.guide-buttons .primary{max-width:450px;gap:12px;align-items:center;justify-content:center}
+.guide-buttons .outline{white-space:nowrap}
+@media(max-width:740px){
+ .guide-shell{margin:32px auto 70px}
+ .guide-shell h1{font-size:clamp(39px,9vw,55px);letter-spacing:-1.9px;margin:18px 0 15px}
+ .guide-lede{font-size:14px;line-height:1.6}
+ .guide-example-grid,.guide-differences{grid-template-columns:1fr;gap:10px}
+ .guide-example{padding:19px 20px}
+ .guide-number{font-size:49px}
+ .guide-example h2{font-size:16px;margin:10px 0 7px}
+ .guide-example p,.guide-differences p{font-size:13px}
+ .guide-differences article{padding:17px}
+ .guide-calibration{margin:13px 0 18px;font-size:13px}
+ .guide-buttons{flex-direction:column-reverse}
+ .guide-buttons .primary,.guide-buttons .outline{width:100%;max-width:none;min-height:56px}
+}

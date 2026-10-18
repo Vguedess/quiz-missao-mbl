@@ -12,7 +12,7 @@ Questionário político independente criado por V. Guedes.
 - **105 programáticas** do Livro Amarelo e **15 culturais** relacionadas ao MBL.
 - **Índice Missão:** pontua todas as 120 afirmações.
 - **Índice MBL:** pontua somente as 15 afirmações culturais.
-- **12 curvas personalizadas** e curvas padrão por direção.
+- **12 curvas personalizadas**, preservadas. A escala padrão é `[+3, +2, +1, 0, -1, -2, -3, 0]` (multiplicada pela direção da questão).
 - A referência de 100% usa exclusivamente a resposta **moderada** (“Concordo” ou “Discordo” alinhado) para cada questão respondida.
 - “Não sei” é excluído de numerador e denominador; “Neutro” entra no denominador com pontuação zero.
 - Índices não são limitados a 0–100%; valores superiores ou negativos são admitidos.
@@ -22,13 +22,21 @@ Questionário político independente criado por V. Guedes.
 
 A afirmação cultural #119 **“Prendeu, Matou?”** foi integrada ao quiz. A escala exclusiva `[+5, +3, +1, 0, 0, 0, 0, 0]` aplica-se somente a ela; a referência moderada é +3. O arquivo `archive/bonus-question-119.json` mantém a origem histórica dessa regra. Os pesos de #9 a #16 do capítulo 2 não foram alterados.
 
-A questão #120, **“O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.”**, pertence à **Cultura Política (MBL)**, alinhamento em **Concordo** e peso padrão `[+4, +2, +1, 0, -1, -2, -4, 0]` (a última opção é “Não sei”, excluída do cálculo). A referência é +2. Ela entra tanto no índice MBL quanto no índice Missão. A branch `release/v1.0` permanece preservada com o conjunto anterior de 119 questões.
+A questão #120, **“O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.”**, pertence à **Cultura Política (MBL)**, alinhamento em **Concordo** e peso padrão `[+3, +2, +1, 0, -1, -2, -3, 0]` (a última opção é “Não sei”, excluída do cálculo). A referência é +2. Ela entra tanto no índice MBL quanto no índice Missão. A branch `release/v1.0` permanece preservada com o conjunto anterior de 119 questões.
+
+## Pergunta 0 e nova escala padrão
+
+Após escolher a identificação e o consentimento, o participante vê uma tela introdutória denominada **Questão 0**, antes das 120 questões. Ela é apenas orientativa e não entra no total de questões, nem altera a ordem aleatória ou qualquer pontuação. É possível voltar a ela pela primeira afirmação.
+
+Na escala padrão, **Concordo/Discordo** alinhado é a referência de 100% (+2 pontos), enquanto **Concordo totalmente/Discordo totalmente** alinhado vale **150%** por questão (+3 pontos). A combinação de metade das respostas extremas e metade moderadas seria 125% quando se considera apenas questões padrão alinhadas; questões com curvas especiais podem alterar o resultado. **Neutro** = 0, contabilizado no denominador. **Não sei** = excluído de numerador e denominador.
+
+A partir desta atualização, participações novas com a pontuação alterada são registradas em `quiz-participations/v2/`; a média pública considera apenas essa versão, sem misturar resultados antigos. Registros legados `v1` são preservados e seguem disponíveis para exclusão com o identificador original do participante. Tentativas já iniciadas continuam no ponto em que pararam. A versão de referência do código anterior à mudança permanece na branch `release/v1.0`.
 
 ## Armazenamento **nativo da Vercel**, sem PostgreSQL externo
 
 Este site usa **Vercel Blob privado**, que tem franquia no plano Hobby. Nenhuma conta de Neon, Supabase ou banco SQL é necessária.
 
-Cada resposta autorizada é gravada como um objeto JSON **privado e imutável**; a identidade é armazenada apenas dentro do arquivo privado. O nome do arquivo contém somente um identificador aleatório e os quatro números necessários para calcular médias (pontos e referências de Missão/MBL), nunca o @, nome ou texto das respostas. `/api/stats` calcula as médias pela listagem de metadados privados. O endpoint é cacheado por 15 minutos para economizar operações e evitar consultas desnecessárias. `/api/delete` permite a exclusão mediante posse do ID de tentativa aleatório salvo no navegador.
+Cada resposta autorizada é gravada como um objeto JSON **privado e imutável**; a identidade é armazenada apenas dentro do arquivo privado. O nome do arquivo contém somente um identificador aleatório e os quatro números necessários para calcular médias (pontos e referências de Missão/MBL), nunca o @, nome ou texto das respostas. `/api/stats` calcula as médias da versão atual pela listagem de metadados privados. O endpoint é cacheado por 15 minutos para economizar operações e evitar consultas desnecessárias. `/api/delete` permite a exclusão mediante posse do ID de tentativa aleatório salvo no navegador.
 
 **Limitação:** Blob é armazenamento de objetos, não banco transacional. Essa arquitetura é adequada a um quiz inicial de pequeno volume; com muitos participantes, a listagem repetida e as cotas de operações poderão exigir outra arquitetura. As médias são estatísticas de participação voluntária, não uma amostra representativa da população.
 

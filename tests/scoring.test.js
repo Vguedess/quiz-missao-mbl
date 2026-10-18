@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { questions } from "../questions.js";
 import { scoreAnswer, calculateResults, validateCompleteAnswers, referenceScore } from "../lib/scoring.js";
 import { getBand } from "../lib/bands.js";
-import { resultPath, scoreFromPath, validAttemptId, PREFIX } from "../lib/blob-store.js";
+import { resultPath, scoreFromPath, validAttemptId, PREFIX, LEGACY_PREFIX } from "../lib/blob-store.js";
 
 test("120 afirmações, 105 programáticas, 15 culturais, inclusive #119 e #120",()=> {
   assert.equal(questions.length,120);
@@ -92,13 +92,13 @@ test("a afirmação #119 tem EXATAMENTE a pontuação cultural aprovada e refer�
 test("as oito questões do capítulo 2 conservam todas as curvas ORIGINAIS, sem interferência da 119",()=> {
  const curves={
   9:[-4,-2,0,0,2,4,6,0],
-  10:[4,2,1,0,-1,-2,-4,0],
-  11:[4,2,1,0,-1,-2,-4,0],
-  12:[4,2,1,0,-1,-2,-4,0],
-  13:[4,2,1,0,-1,-2,-4,0],
-  14:[-4,-2,-1,0,1,2,4,0],
-  15:[4,2,1,0,-1,-2,-4,0],
-  16:[4,2,1,0,-1,-2,-4,0]
+  10:[3,2,1,0,-1,-2,-3,0],
+  11:[3,2,1,0,-1,-2,-3,0],
+  12:[3,2,1,0,-1,-2,-3,0],
+  13:[3,2,1,0,-1,-2,-3,0],
+  14:[-3,-2,-1,0,1,2,3,0],
+  15:[3,2,1,0,-1,-2,-3,0],
+  16:[3,2,1,0,-1,-2,-3,0]
  };
  assert.equal(questions.filter(q=>q.chapter==="Prendeu, Matou?").length,8);
  for(const [id,expected] of Object.entries(curves)){
@@ -124,7 +124,7 @@ test("questão 78: texto atualizado e pontuação original intacta",()=>{
  assert.equal(q.chapter,"Celeiro do Mundo");
  assert.equal(q.group,"missao");
  assert.equal(q.dir,1);
- assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(q,i)),[4,2,1,0,-1,-2,-4,0]);
+ assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(q,i)),[3,2,1,0,-1,-2,-3,0]);
  assert.equal(referenceScore(q),2);
 });
 
@@ -134,9 +134,9 @@ test("questão 120: aborto, categoria MBL, concordância moderada e pesos padrã
   assert.equal(item.chapter,"Cultura Política");
   assert.equal(item.group,"mbl");
   assert.equal(item.dir,1);
-  assert.deepEqual(Array.from({length:8},(_,answer)=>scoreAnswer(item,answer)),[4,2,1,0,-1,-2,-4,0]);
+  assert.deepEqual(Array.from({length:8},(_,answer)=>scoreAnswer(item,answer)),[3,2,1,0,-1,-2,-3,0]);
   assert.equal(referenceScore(item),2);
-  for(const [answer,points,denominator] of [[0,4,2],[1,2,2],[2,1,2],[3,0,2],[4,-1,2],[5,-2,2],[6,-4,2],[7,0,0]]){
+  for(const [answer,points,denominator] of [[0,3,2],[1,2,2],[2,1,2],[3,0,2],[4,-1,2],[5,-2,2],[6,-3,2],[7,0,0]]){
     const response=Object.fromEntries(questions.map(q=>[q.id,7]));
     response[120]=answer;
     const result=calculateResults(response);
@@ -151,4 +151,27 @@ test("adição da questão 120 não altera as 12 curvas anteriores",()=>{
   const q119=questions.find(q=>q.id===119);
   assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(q119,i)),expected119);
   assert.equal(Object.prototype.hasOwnProperty.call({"6":[-10,-5,-4,0,-3,2,4,0],"9":[-4,-2,0,0,2,4,6,0],"19":[8,4,2,0,1,-2,-5,0],"48":[6,4,1,0,-1,-2,-6,0],"49":[-6,-1,0,0,1,2,1,0],"50":[-6,-5,-2,0,-1,2,3,0],"51":[2,2,2,0,1,0,0,0],"57":[5,4,1,0,-1,-2,-4,0],"106":[-10,-6,-4,0,-3,5,10,0],"110":[-5,-4,-2,0,-1,4,8,0],"111":[-6,-3,-1,0,1,3,6,0],"119":[5,3,1,0,0,0,0,0]},"120"),false);
+});
+
+test("escala padrão: extremos valem 150%, moderados valem 100%",()=>{
+  const qPositive=questions.find(q=>q.dir===1&&!([6,9,19,48,49,50,51,57,106,110,111,119].includes(q.id)));
+  const qNegative=questions.find(q=>q.dir===-1&&!([6,9,19,48,49,50,51,57,106,110,111,119].includes(q.id)));
+  assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(qPositive,i)),[3,2,1,0,-1,-2,-3,0]);
+  assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(qNegative,i)),[-3,-2,-1,0,1,2,3,0]);
+  assert.equal(referenceScore(qPositive),2);
+  assert.equal(referenceScore(qNegative),2);
+  const answers=Object.fromEntries(questions.map(q=>[q.id,7]));
+  answers[qPositive.id]=0;
+  assert.equal(calculateResults(answers).missao.percent,150);
+  answers[qPositive.id]=1;
+  assert.equal(calculateResults(answers).missao.percent,100);
+});
+test("histórico privado: novos registros separados sem inviabilizar leitura e exclusão dos anteriores",()=>{
+ const id="550e8400-e29b-41d4-a716-446655440000";
+ const s1=LEGACY_PREFIX+id+"/m2_2-b2_2.json";
+ const s2=PREFIX+id+"/m3_2-b3_2.json";
+ assert.equal(PREFIX,"quiz-participations/v2/");
+ assert.equal(LEGACY_PREFIX,"quiz-participations/v1/");
+ assert.deepEqual(scoreFromPath(s1),{mission:100,mbl:100});
+ assert.deepEqual(scoreFromPath(s2),{mission:150,mbl:150});
 });

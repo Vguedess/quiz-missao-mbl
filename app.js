@@ -1,8 +1,8 @@
 import { getBand } from "./lib/bands.js";
-import { initShare } from "./share.js?v=quiz-119-v1";
+import { initShare } from "./share.js?v=score-v2";
 import {questions, specialScores} from "./questions.js?v=quiz-120-aborto-v1";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
-const base=[4,2,1,0,-1,-2,-4,0];
+const base=[3,2,1,0,-1,-2,-3,0];
 const KEY="radar-ideias-v1";
 const MOBILE_QUERY="(max-width: 740px) and (pointer: coarse)";
 const MOBILE_PREF_KEY="radar-ideias-mobile-auto";
@@ -31,7 +31,7 @@ function shuffle(){const a=questions.map(q=>q.id);for(let i=a.length-1;i>0;i--){
 function load(){
   try{
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
-    if(!saved||!Array.isArray(saved.order)||!saved.answers||typeof saved.answers!=="object"||!Number.isInteger(saved.cursor)||!["landing","quiz","result"].includes(saved.phase))return;
+    if(!saved||!Array.isArray(saved.order)||!saved.answers||typeof saved.answers!=="object"||!Number.isInteger(saved.cursor)||!["landing","guide","quiz","result"].includes(saved.phase))return;
     const total=questions.length;
     // Preserve a randomized order from a past 118/119-question edition.
     // Any newly added questions are appended, leaving prior answers untouched.
@@ -49,13 +49,16 @@ function load(){
     }
     const valid=saved.order.length===total&&new Set(saved.order).size===total&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<=total);
     if(valid&&saved.cursor>=0&&saved.cursor<total){
+      const oldScoring=saved.scoreVersion!==2;
+      if(oldScoring&&saved.submission==="saved")saved.legacySaved=true;
+      saved.scoreVersion=2;
       state=saved;
-      if(isLegacy)persist();
+      if(isLegacy||oldScoring)persist();
     }
   }catch{}
 }
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}}
-function reveal(phase){clearAdvance();["landing","onboard","quiz","result"].forEach(id=>$(id).hidden=id!==phase);state.phase=phase;persist();window.scrollTo({top:0,behavior:"instant"})}
+function reveal(phase){clearAdvance();["landing","onboard","guide","quiz","result"].forEach(id=>$(id).hidden=id!==phase);state.phase=phase;persist();window.scrollTo({top:0,behavior:"instant"})}
 function qById(id){return questions[id-1]}
 function score(q,answer){if(answer===7)return 0;const custom=specialScores[q.id];return custom?custom[answer]:base[answer]*q.dir}
 function reference(q){return score(q,q.dir===1?1:5)}
@@ -65,8 +68,8 @@ function start(){
   clearAdvance();
   const identityType=$("identityType").value, identityValue=$("identityValue").value.trim();
   if(identityType!=="anonymous"&&(!identityValue||identityValue.length>60)){$("identityValue").focus();return}
-  state={order:shuffle(),answers:{},cursor:0,phase:"quiz",consent:$("dataConsent").checked,identityType,identityValue:identityType==="anonymous"?"":identityValue,attemptId:crypto.randomUUID(),submission:"idle"};
-  reveal("quiz");renderQuestion();
+  state={order:shuffle(),answers:{},cursor:0,phase:"guide",guideSeen:false,scoreVersion:2,consent:$("dataConsent").checked,identityType,identityValue:identityType==="anonymous"?"":identityValue,attemptId:crypto.randomUUID(),submission:"idle"};
+  reveal("guide");
 }
 const answerTones=["full-agree","agree","partial-agree","neutral","partial-disagree","disagree","full-disagree","unknown"];
 function updateProgress(){
@@ -121,7 +124,8 @@ function renderQuestion(){
   $("question").textContent=q.text;
   fitQuestionText();
   updateProgress();
-  $("prev").disabled=state.cursor===0;
+  $("prev").disabled=false;
+  $("prev").textContent=state.cursor===0?"← COMO RESPONDER":"← VOLTAR";
   $("next").disabled=state.answers[id]===undefined;
   $("next").innerHTML=state.cursor===questions.length-1?"VER RESULTADOS <span>→</span>":"CONTINUAR <span>→</span>";
   const box=$("answers");
@@ -139,12 +143,12 @@ function renderQuestion(){
   });
 }
 function next(){clearAdvance();const id=state.order[state.cursor];if(state.answers[id]===undefined)return;if(state.cursor===questions.length-1){if(Object.keys(state.answers).length!==questions.length)return;reveal("result");renderResults();return}state.cursor++;persist();renderQuestion()}
-function previous(){clearAdvance();if(state.cursor>0){state.cursor--;persist();renderQuestion()}}
+function previous(){clearAdvance();if(state.cursor>0){state.cursor--;persist();renderQuestion()}else reveal("guide")}
 function renderResults(){const m=calculate("missao"),b=calculate("mbl");$("missaoScore").textContent=pct(m.value);$("mblScore").textContent=pct(b.value);$("missaoCoverage").textContent="Respostas consideradas: "+Math.round(m.known/m.total*100)+"%"+(m.unknown?" · “Não sei” desconsiderado":"");$("mblCoverage").textContent="Respostas consideradas: "+Math.round(b.known/b.total*100)+"%"+(b.unknown?" · “Não sei” desconsiderado":"");const names=[...new Set(questions.map(q=>q.chapter))];const table=$("chapters");table.replaceChildren();for(const name of names){const subset=questions.filter(q=>q.chapter===name);let actual=0,target=0,known=0,unknown=0;for(const q of subset){const a=state.answers[q.id];if(a===7){unknown++;continue}if(a===undefined)continue;actual+=score(q,a);target+=reference(q);known++}const row=document.createElement("div");row.className="chapter-row";const title=document.createElement("div");title.className="chapter-name";title.textContent=name;const value=document.createElement("div");value.className="chapter-score";value.textContent=pct(target?actual/target*100:null);const sub=document.createElement("div");sub.className="chapter-small";sub.textContent=Math.round(100*known/subset.length)+"% das respostas consideradas"+(unknown?" · “Não sei” excluído":"");row.append(title,value,sub);table.append(row)}renderExtras();restoreResultTop();}
 function download(){const result={method:"Pontuação real ÷ referência moderada × 100",createdAt:new Date().toISOString(),indices:{missao:calculate("missao"),mbl:calculate("mbl")},answers:state.order.map((id,order)=>({questionId:id,order:order+1,chapter:qById(id).chapter,group:qById(id).group,answer:labels[state.answers[id]],points:score(qById(id),state.answers[id])}))};const blob=new Blob([JSON.stringify(result,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="meu-resultado-radar-de-ideias.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),200)}
 $("autoAdvance").checked=autoAdvance;
 $("autoAdvance").addEventListener("change",e=>{autoAdvance=e.target.checked;clearAdvance();try{localStorage.setItem(MOBILE_PREF_KEY,String(autoAdvance))}catch{}});
-$("start").addEventListener("click",openOnboard);$("resume").addEventListener("click",()=>{if(Object.keys(state.answers||{}).length===questions.length){reveal("result");renderResults()}else{reveal("quiz");renderQuestion()}});$("next").addEventListener("click",next);$("prev").addEventListener("click",previous);$("newAttempt").addEventListener("click",()=>{$("dataConsent").checked=false;openOnboard()});$("download").addEventListener("click",download);
+$("start").addEventListener("click",openOnboard);$("resume").addEventListener("click",()=>{if(Object.keys(state.answers||{}).length===questions.length){reveal("result");renderResults()}else if(state.guideSeen===false){reveal("guide")}else{reveal("quiz");renderQuestion()}});$("next").addEventListener("click",next);$("prev").addEventListener("click",previous);$("newAttempt").addEventListener("click",()=>{$("dataConsent").checked=false;openOnboard()});$("download").addEventListener("click",download);
 
 function syncIdentityField(){
   const show=$("identityType").value!=="anonymous";
@@ -174,7 +178,7 @@ async function updateParticipantStats(){
     if(!response.ok)throw Error("unavailable");
     const body=await response.json();
     if(!body.available)throw Error("unavailable");
-    renderStatsNode([[String(body.count),"RESULTADOS REGISTRADOS"],[pct(body.missao),"MÉDIA DE ADERÊNCIA MISSÃO"],[pct(body.mbl),"MÉDIA DE AFINIDADE MBL"]]);
+    renderStatsNode([[String(body.count),"RESULTADOS NA ESCALA ATUAL"],[pct(body.missao),"MÉDIA DE ADERÊNCIA MISSÃO"],[pct(body.mbl),"MÉDIA DE AFINIDADE MBL"]]);
   }catch{renderStatsNode([["Estatísticas indisponíveis","O BANCO AINDA NÃO ESTÁ CONECTADO OU ESTÁ TEMPORARIAMENTE INDISPONÍVEL"]])}
 }
 async function submitParticipation(){
@@ -201,7 +205,7 @@ function renderExtras(){
     if(state.submission==="saved"){
       $("deleteParticipation").hidden=false;
       $("saveFeedback").textContent=state.legacySaved
-        ?"Seu registro anterior corresponde a uma versão do questionário com menos afirmações. As novas respostas não foram enviadas ao servidor; você pode excluir o registro antigo abaixo."
+        ?"Seu registro foi feito com a escala anterior e permanece preservado, mas não entra nas médias da nova escala. Você pode excluir o registro antigo abaixo."
         :"Resultado registrado anteriormente com seu consentimento.";
     }
     else void submitParticipation();
@@ -231,6 +235,8 @@ $("deleteParticipation").addEventListener("click",()=>void removeMyParticipation
 $("identityType").addEventListener("change",syncIdentityField);
 $("onboardBack").addEventListener("click",goHome);
 $("onboardStart").addEventListener("click",start);
+$("guideBack").addEventListener("click",goHome);
+$("guideStart").addEventListener("click",()=>{state.guideSeen=true;reveal("quiz");renderQuestion()});
 syncIdentityField();
 shareUI=initShare({readState:()=>state,patchState:changes=>{Object.assign(state,changes);persist()},goHome});
 shareUI.refreshHome();
@@ -267,4 +273,4 @@ document.querySelectorAll(".pix-key").forEach(input=>input.addEventListener("foc
 
 window.addEventListener("resize",()=>{if(state.phase==="quiz")requestAnimationFrame(fitQuestionText)},{passive:true});
 if(document.fonts?.ready)document.fonts.ready.then(()=>{if(state.phase==="quiz")fitQuestionText()});
-load();shareUI.refreshHome();if(state.order.length===questions.length){$("resume").hidden=false;if(state.phase==="quiz"){reveal("quiz");renderQuestion()}else if(state.phase==="result"){reveal("result");renderResults()}else if(state.phase==="landing"){goHome()}}
+load();shareUI.refreshHome();if(state.order.length===questions.length){$("resume").hidden=false;if(state.phase==="guide"){reveal("guide")}else if(state.phase==="quiz"){reveal("quiz");renderQuestion()}else if(state.phase==="result"){reveal("result");renderResults()}else if(state.phase==="landing"){goHome()}}

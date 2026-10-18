@@ -170,3 +170,25 @@ button,.answer{touch-action:manipulation}
  .intro-headline-subject,.intro-headline-question{display:block;white-space:nowrap}
  .intro-headline-verb{text-transform:uppercase}
 }
+
+/* Cabeçalho VG · identidade tipográfica sem o símbolo circular anterior */
+.topbar .logo{display:inline-flex;align-items:center;gap:12px;min-width:0;font-family:'Space Grotesk',sans-serif;letter-spacing:0}
+.topbar .logo-mark{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:22px;line-height:1;font-weight:800;letter-spacing:-1.5px;color:var(--yellow);background:transparent;border:0;border-radius:0;box-shadow:none}
+.topbar .logo-title{min-width:0;font-size:clamp(14px,1.55vw,20px);font-weight:700;letter-spacing:-.55px;line-height:1.2;color:#f5f4f0;white-space:nowrap}
+.topbar .logo-qualifier{font-weight:700}
+.intro-main .intro-headline{margin-top:12px}
+@media(max-width:960px){
+  .topbar .logo{gap:9px}
+  .topbar .logo-title{font-size:clamp(13px,1.55vw,17px)}
+}
+@media(max-width:740px){
+  .topbar .logo{gap:8px}
+  .topbar .logo-mark{font-size:19px}
+  .topbar .logo-title{font-size:clamp(12px,3.35vw,16px);letter-spacing:-.35px}
+  .topbar .topright{flex:0 0 auto}
+  .intro-main .intro-headline{margin-top:2px}
+}
+@media(max-width:550px){
+  .topbar .owner-nav{display:none}
+  .topbar .logo-title{font-size:clamp(12px,3.5vw,15px)}
+}

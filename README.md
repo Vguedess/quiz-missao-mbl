@@ -74,3 +74,15 @@ npm run check
 O frontend sem API pode rodar em um servidor estático. As APIs dependem de Vercel Functions e do Blob privado conectado.
 
 Projeto independente, sem endosso oficial do Partido Missão ou do MBL.
+
+
+## Compartilhamento e personalização
+
+- Título da aba: **Quiz Missão/MBL | Guedes**, com favicon SVG `G` em `/favicon.svg`.
+- O clique no cabeçalho `VG` abre a página inicial **sem excluir o progresso**. O botão de retomada abre o questionário inacabado ou o resultado completo.
+- Identificação social opcional na **home**, mesmo depois de responder: X / Instagram. O @ fica salvo no navegador e aparece no cartão pessoal ao retornar aos resultados. Alterar o @ localmente não modifica retroativamente um registro já armazenado no servidor.
+- Cartão editorial `#shareCard`: duas porcentagens grandes, Missão em amarelo e MBL em verde-menta, título da faixa, identificação opcional e endereço oficial. Os índices não são limitados em 100%.
+- `share.js` gera PNG em 1080×1350 no próprio dispositivo. Em navegadores compatíveis, oferece compartilhamento nativo; nos demais, download direto. Nenhuma imagem individual é enviada ao servidor.
+- Resultado MBL inclui **explicação própria**, independente do texto de Missão.
+- `/results/mission-sigil.svg` e `/results/mbl-culture.svg` são ilustrações locais de fallback; as quatro fotografias originais **ainda não estão no repositório**. Quando forem disponibilizadas, copiar como `/results/amanda-oculos.png`, `/results/onca-poster.png`, `/results/renan-microfone.png` e `/results/onca-patch.png`. O código da pontuação não precisa ser modificado.
+

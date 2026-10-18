@@ -461,3 +461,6 @@ button,.answer{touch-action:manipulation}
 }
 @media(max-width:350px){.share-edition{display:none}.share-card-feature{gap:6px}.share-card-headline h3{font-size:18px}}
 @media(prefers-reduced-motion:reduce){.share-tools button{transition:none}}
+
+/* Author styles must not override the hidden attribute on profile controls. */
+[hidden]{display:none!important}

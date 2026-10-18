@@ -466,7 +466,7 @@ button,.answer{touch-action:manipulation}
 [hidden]{display:none!important}
 
 /* 2026 result-card v3: complete photographs with no face cropping */
-#result .result-heading,#result .share-intro,#result .result-grid,#result .result-editorial{display:none}
+#result .result-heading,#result .share-intro,#result .result-editorial{display:none}
 #result .results-wrap{padding-top:32px}
 #result .share-section{max-width:790px;margin:0 auto 38px}
 #result .share-card{padding:24px 26px 20px}
@@ -502,4 +502,22 @@ button,.answer{touch-action:manipulation}
  #result .share-metric strong{font-size:clamp(26px,7.5vw,37px);letter-spacing:-1px}
  #result .share-card-headline h3{font-size:clamp(24px,7vw,30px)}
  #result .share-brand small{display:none}
+}
+
+/* Result recovery v4: keep the image card visible and make scores accessible on mobile */
+#result .share-section { display:block; visibility:visible; opacity:1; }
+#result .share-card { display:block; visibility:visible; opacity:1; }
+#result .result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); max-width:790px; margin:15px auto 50px; gap:10px; }
+#result .result-grid .score-card { display:flex; flex-direction:column; justify-content:center; min-width:0; padding:13px 17px; border-radius:9px; background:#1a222e; border:1px solid #5c5360; }
+#result .result-grid .score-top,
+#result .result-grid .score-desc,
+#result .result-grid .score-stripe { display:none; }
+#result .result-grid .score-label { margin:0 0 4px; font:700 11px/1.3 'Space Grotesk',sans-serif; text-transform:uppercase; letter-spacing:1.1px; color:#dce1e9; }
+#result .result-grid .score-value { font:800 clamp(24px,4vw,33px)/1.2 'Space Grotesk',sans-serif; letter-spacing:-1px; }
+#result .result-details { margin-top:20px; }
+@media(max-width:740px) {
+  #result .share-section { margin:0 auto 8px; }
+  #result .result-grid { margin:10px auto 38px; gap:8px; }
+  #result .result-grid .score-card { padding:12px; }
+  #result .result-grid .score-value { font-size:clamp(23px,6vw,31px); }
 }

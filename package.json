@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "check": "node --check app.js && node --check api/submit.js && node --check api/stats.js && node --check api/delete.js"
+    "check": "node --check app.js && node --check share.js && node --check api/submit.js && node --check api/stats.js && node --check api/delete.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.3.0"

@@ -2,7 +2,7 @@
 
 Questionário político independente criado por V. Guedes.
 
-**Site de produção:** https://quiz-missao-mbl-github.vercel.app/ (poderá ser renomeado para quiz-missao-mbl.vercel.app após a exclusão do projeto Vercel duplicado).
+**Site de produção:** https://quiz-missao-mbl.vercel.app/
 
 **Autor:** https://www.youtube.com/@vguedess · https://x.com/vguedessa
 
@@ -32,7 +32,7 @@ Cada resposta autorizada é gravada como um objeto JSON **privado e imutável**;
 
 ### Conectar o Blob uma única vez
 
-1. Acesse **Vercel > Beyond Curve > projeto `quiz-missao-mbl-github` > Storage**.
+1. Acesse **Vercel > Beyond Curve > projeto `quiz-missao-mbl` > Storage**.
 2. Escolha **Blob** (primeira opção nativa) e clique para criar novo armazenamento.
 3. Selecione obrigatoriamente **Private**, não **Public**. Arquivos guardam respostas e podem revelar opinião política.
 4. Conecte o armazenamento ao projeto e selecione **Production** e **Preview**.

@@ -104,13 +104,15 @@ test("as oito questões do capítulo 2 conservam todas as curvas ORIGINAIS, sem 
   const item=questions.find(q=>q.id===Number(id));
   assert.equal(item.chapter,"Prendeu, Matou?");
   assert.equal(item.group,"missao");
-  assert.deepEqual(Array.from({length:8},(_,choice)=>scoreAnswer(item,choice)),expected);
+  // -0 e +0 pontuam igual; normalize apenas para comparar no teste.
+  assert.deepEqual(Array.from({length:8},(_,choice)=>scoreAnswer(item,choice)).map(n=>n===0?0:n),expected);
  }
 });
 test("as 11 curvas customizadas existentes permanecem inalteradas",()=>{
  const curves={"6":[-10,-5,-4,0,-3,2,4,0],"9":[-4,-2,0,0,2,4,6,0],"19":[8,4,2,0,1,-2,-5,0],"48":[6,4,1,0,-1,-2,-6,0],"49":[-6,-1,0,0,1,2,1,0],"50":[-6,-5,-2,0,-1,2,3,0],"51":[2,2,2,0,1,0,0,0],"57":[5,4,1,0,-1,-2,-4,0],"106":[-10,-6,-4,0,-3,5,10,0],"110":[-5,-4,-2,0,-1,4,8,0],"111":[-6,-3,-1,0,1,3,6,0]};
  for(const [id,expected] of Object.entries(curves)){
   const item=questions.find(q=>q.id===Number(id));
-  assert.deepEqual(Array.from({length:8},(_,choice)=>scoreAnswer(item,choice)),expected);
+  // -0 e +0 pontuam igual; normalize apenas para comparar no teste.
+  assert.deepEqual(Array.from({length:8},(_,choice)=>scoreAnswer(item,choice)).map(n=>n===0?0:n),expected);
  }
 });

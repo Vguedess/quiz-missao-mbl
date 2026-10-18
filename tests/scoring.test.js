@@ -157,7 +157,7 @@ test("escala padrão: extremos valem 150%, moderados valem 100%",()=>{
   const qPositive=questions.find(q=>q.dir===1&&!([6,9,19,48,49,50,51,57,106,110,111,119].includes(q.id)));
   const qNegative=questions.find(q=>q.dir===-1&&!([6,9,19,48,49,50,51,57,106,110,111,119].includes(q.id)));
   assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(qPositive,i)),[3,2,1,0,-1,-2,-3,0]);
-  assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(qNegative,i)),[-3,-2,-1,0,1,2,3,0]);
+  assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(qNegative,i)).map(n=>n===0?0:n),[-3,-2,-1,0,1,2,3,0]);
   assert.equal(referenceScore(qPositive),2);
   assert.equal(referenceScore(qNegative),2);
   const answers=Object.fromEntries(questions.map(q=>[q.id,7]));

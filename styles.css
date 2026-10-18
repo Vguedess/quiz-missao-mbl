@@ -464,3 +464,42 @@ button,.answer{touch-action:manipulation}
 
 /* Author styles must not override the hidden attribute on profile controls. */
 [hidden]{display:none!important}
+
+/* 2026 result-card v3: complete photographs with no face cropping */
+#result .result-heading,#result .share-intro,#result .result-grid,#result .result-editorial{display:none}
+#result .results-wrap{padding-top:32px}
+#result .share-section{max-width:790px;margin:0 auto 38px}
+#result .share-card{padding:24px 26px 20px}
+#result .share-card-head{padding-bottom:14px}
+#result .share-card-feature{display:flex;flex-direction:column;align-items:stretch;gap:18px;padding:22px 0}
+#result .share-card-headline{text-align:center;width:100%}
+#result .share-card-headline h3{margin:0 auto;max-width:700px;color:#fffaf2;font:700 clamp(30px,4.5vw,51px)/1.12 'Space Grotesk',sans-serif;letter-spacing:-1.5px;text-wrap:balance}
+#result .share-card-art{display:flex;align-items:center;justify-content:center;width:100%;height:auto;min-height:0;aspect-ratio:auto;overflow:hidden;padding:10px;border-radius:12px;background:#111923;border:1px solid #ffe16b44}
+#result .share-card-art img{display:block;position:static;width:auto;height:auto;max-width:100%;max-height:600px;object-fit:contain;object-position:center;margin:auto}
+#result .share-card-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#result .share-metric{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:16px 12px;text-align:center}
+#result .share-metric strong{display:block;font:800 clamp(40px,6.9vw,71px)/1.12 'Space Grotesk',sans-serif;letter-spacing:-2.8px;white-space:nowrap}
+#result .share-metric-label{font:800 12px 'Space Grotesk',sans-serif;letter-spacing:2px;justify-content:center}
+#result .share-card-bottom{margin-top:16px}
+#result .result-details{margin:54px 0 66px}
+#result .chapter-table{width:100%}
+#result .result-editorial-visual img{object-fit:contain}
+@media(max-width:740px){
+ #result .results-wrap{padding-top:18px}
+ #result .share-card{padding:18px 16px 16px}
+ #result .share-card-feature{gap:13px;padding:17px 0 15px}
+ #result .share-card-headline h3{font-size:clamp(26px,6vw,39px);line-height:1.12;letter-spacing:-.8px}
+ #result .share-card-art{min-height:0;padding:6px}
+ #result .share-card-art img{max-height:60svh;max-width:100%}
+ #result .share-card-metrics{gap:9px}
+ #result .share-metric{padding:14px 8px}
+ #result .share-metric strong{font-size:clamp(31px,7vw,55px);letter-spacing:-1.8px}
+ #result .share-metric-label{font-size:10px;letter-spacing:1.4px}
+ #result .result-details{margin-top:45px}
+}
+@media(max-width:400px){
+ #result .share-card-art img{max-height:55svh}
+ #result .share-metric strong{font-size:clamp(26px,7.5vw,37px);letter-spacing:-1px}
+ #result .share-card-headline h3{font-size:clamp(24px,7vw,30px)}
+ #result .share-brand small{display:none}
+}

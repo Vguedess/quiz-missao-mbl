@@ -53,12 +53,15 @@ function loadImage(src){
   img.src=src;
  });
 }
-function drawCover(ctx,img,x,y,w,h){
- const scale=Math.max(w/img.width,h/img.height);
- const sw=w/scale,sh=h/scale;
- const sx=(img.width-sw)/2,sy=(img.height-sh)/2;
- ctx.save();rounded(ctx,x,y,w,h,25);ctx.clip();
- ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);ctx.restore();
+function drawContained(ctx,img,x,y,w,h){
+ // Display the complete photo (equivalent to CSS object-fit: contain).
+ const scale=Math.min(w/img.width,h/img.height);
+ const dw=img.width*scale,dh=img.height*scale;
+ ctx.save();rounded(ctx,x,y,w,h,20);ctx.clip();
+ ctx.fillStyle="#111923";ctx.fillRect(x,y,w,h);
+ ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+ ctx.restore();
+ ctx.save();ctx.strokeStyle="#f5dc5b77";ctx.lineWidth=2;rounded(ctx,x,y,w,h,20);ctx.stroke();ctx.restore();
 }
 async function makeCanvas(missao,mbl,profile){
  await document.fonts?.ready;
@@ -81,38 +84,35 @@ async function makeCanvas(missao,mbl,profile){
  c.textAlign="right";c.font="800 20px 'Space Grotesk',Arial";c.fillStyle="#f9da6a";c.fillText("EDIÇÃO 2026",1012,100);c.textAlign="left";
  c.fillStyle="#d6b84a";c.fillRect(62,172,956,3);
  const band=getBand(missao.value),title=band?SHORT_HEADLINES[band.id]:"RESULTADO INDEFINIDO";
- // Use the exact band asset, even if the page image has not finished loading.
- // This keeps downloaded PNGs consistent with the visible result.
+ c.fillStyle="#ffea8c";c.font="800 20px 'Space Grotesk',Arial";c.fillText("SEU RESULTADO",64,227);
+ c.fillStyle="#fffaf1";c.font="800 60px 'Space Grotesk',Arial";
+ fitText(c,title,64,290,952,65,2);
+ // Match the entire-photo layout of the site, including the chosen source asset.
  const img=await loadImage(band?.image||"/results/mission-sigil.svg")||await loadImage("/results/mission-sigil.svg");
- if(img)drawCover(c,img,64,220,425,435);
- else{c.fillStyle="#292a26";rounded(c,64,220,425,435,25);c.fill();c.font="900 250px Arial";c.fillStyle="#ecca4c";c.fillText("✦",161,510);}
- c.font="800 22px 'Space Grotesk',Arial";c.fillStyle="#ffe779";c.fillText("MINHAS POSIÇÕES",535,300);
- c.font="800 58px 'Space Grotesk',Arial";c.fillStyle="#fffaf1";
- const titleEnd=fitText(c,title,533,383,450,66,4);
- c.font="500 23px 'DM Sans',Arial";c.fillStyle="#c3cfd8";
- fitText(c,"Descubra minha afinidade com as propostas da Missão e a cultura política do MBL.",535,Math.max(540,titleEnd+15),440,35,3);
+ if(img)drawContained(c,img,64,367,952,590);
+ else{
+  c.fillStyle="#111923";rounded(c,64,367,952,590,20);c.fill();
+  c.font="900 220px Arial";c.fillStyle="#ecca4c";c.fillText("✦",440,735);
+ }
  const blocks=[
-  {x:64,w:464,color:"#ffe573",border:"#997c33",back:"#4c3d26",label:"ADERÊNCIA À MISSÃO",hint:"PROGRAMA + CULTURA",value:missao.value},
-  {x:550,w:466,color:"#93f7de",border:"#56baaa",back:"#21433f",label:"AFINIDADE COM O MBL",hint:"VALORES CULTURAIS",value:mbl.value}
+  {x:64,w:464,color:"#ffe573",border:"#997c33",back:"#4c3d26",label:"MISSÃO",value:missao.value},
+  {x:550,w:466,color:"#93f7de",border:"#56baaa",back:"#21433f",label:"MBL",value:mbl.value}
  ];
  for(const block of blocks){
-  c.fillStyle=block.back;rounded(c,block.x,715,block.w,412,24);c.fill();
+  c.fillStyle=block.back;rounded(c,block.x,978,block.w,221,20);c.fill();
   c.strokeStyle=block.border;c.lineWidth=2;c.stroke();
-  c.fillStyle=block.color;rounded(c,block.x+27,752,14,14,3);c.fill();
-  c.font="800 20px 'Space Grotesk',Arial";c.fillText(block.label,block.x+52,766);
   const txt=block.value===null?"—":new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1}).format(block.value)+"%";
-  let size=107;
-  do{c.font="800 "+size+"px 'Space Grotesk',Arial";if(c.measureText(txt).width<=block.w-45)break;size-=4;}while(size>45);
-  c.fillText(txt,block.x+23,930);
-  c.font="800 20px 'Space Grotesk',Arial";c.fillStyle=block.color;c.globalAlpha=.85;
-  c.fillText(block.hint,block.x+28,1084);c.globalAlpha=1;
+  c.fillStyle=block.color;
+  let size=99;
+  do{c.font="800 "+size+"px 'Space Grotesk',Arial";if(c.measureText(txt).width<=block.w-44)break;size-=4;}while(size>42);
+  c.textAlign="center";c.fillText(txt,block.x+block.w/2,1103);
+  c.font="800 26px 'Space Grotesk',Arial";c.fillText(block.label,block.x+block.w/2,1167);
+  c.textAlign="left";
  }
- c.strokeStyle="#f5d55d60";c.beginPath();c.moveTo(63,1185);c.lineTo(1018,1185);c.stroke();
+ c.strokeStyle="#f5d55d60";c.beginPath();c.moveTo(63,1240);c.lineTo(1018,1240);c.stroke();
  const profileText=isSocial(profile)?profile.value:"RESULTADO ANÔNIMO";
- c.font="800 27px 'Space Grotesk',Arial";c.fillStyle="#fff0ad";c.fillText(profileText,64,1230);
- c.textAlign="right";c.font="700 22px 'Space Grotesk',Arial";c.fillStyle="#c6d0d8";c.fillText("quiz-missao-mbl.vercel.app",1014,1230);c.textAlign="left";
- c.fillStyle="#7f909d";c.font="500 17px 'DM Sans',Arial";
- c.fillText("Questionário independente. 100% corresponde à referência moderada, não ao limite máximo.",64,1290);
+ c.font="800 26px 'Space Grotesk',Arial";c.fillStyle="#fff0ad";c.fillText(profileText,64,1294);
+ c.textAlign="right";c.font="700 22px 'Space Grotesk',Arial";c.fillStyle="#c6d0d8";c.fillText("quiz-missao-mbl.vercel.app",1014,1294);c.textAlign="left";
  return canvas;
 }
 function toBlob(canvas){

@@ -311,3 +311,12 @@ button,.answer{touch-action:manipulation}
     white-space:normal;
   }
 }
+
+/* Enunciado e opções sem instruções redundantes: altura do enunciado permanece fixa. */
+#quiz .q-pane{padding-top:12px}
+#quiz .question-frame{margin:0 0 12px}
+@media(max-width:740px){
+  #quiz .q-pane{padding-top:9px}
+  #quiz .question-frame{margin-bottom:10px}
+  #quiz .mobile-preferences{margin-top:0}
+}

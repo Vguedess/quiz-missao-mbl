@@ -92,7 +92,6 @@ function renderQuestion(){
   $("question").textContent=q.text;
   fitQuestionText();
   updateProgress();
-  $("questionOrdinal").textContent="SUA OPINIÃO";
   $("prev").disabled=state.cursor===0;
   $("next").disabled=state.answers[id]===undefined;
   $("next").innerHTML=state.cursor===questions.length-1?"VER RESULTADOS <span>→</span>":"CONTINUAR <span>→</span>";

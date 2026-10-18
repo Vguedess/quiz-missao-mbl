@@ -5,13 +5,14 @@ import { scoreAnswer, calculateResults, validateCompleteAnswers, referenceScore 
 import { getBand } from "../lib/bands.js";
 import { resultPath, scoreFromPath, validAttemptId, PREFIX } from "../lib/blob-store.js";
 
-test("119 afirmações, 105 programáticas, 14 culturais, inclusive a nova cultural #119",()=> {
-  assert.equal(questions.length,119);
+test("120 afirmações, 105 programáticas, 15 culturais, inclusive #119 e #120",()=> {
+  assert.equal(questions.length,120);
   assert.equal(questions.filter(q=>q.group==="missao").length,105);
-  assert.equal(questions.filter(q=>q.group==="mbl").length,14);
-  assert.equal(new Set(questions.map(q=>q.id)).size,119);
+  assert.equal(questions.filter(q=>q.group==="mbl").length,15);
+  assert.equal(new Set(questions.map(q=>q.id)).size,120);
   assert.equal(questions[25].dir,-1);
   assert.deepEqual(questions[118],{id:119,text:"Prendeu, Matou?",dir:1,chapter:"Cultura Política",group:"mbl"});
+  assert.deepEqual(questions[119],{id:120,text:"O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.",dir:1,chapter:"Cultura Política",group:"mbl"});
 });
 test("pontuações especiais são preservadas",()=> {
   assert.equal(referenceScore(questions[8]),4);
@@ -30,8 +31,8 @@ test("MBL contribui para Missão, mas programa não contribui para MBL",()=> {
   const a=Object.fromEntries(questions.map(q=>[q.id,7]));
   for(const q of questions.filter(q=>q.group==="mbl"))a[q.id]=q.dir===1?1:5;
   const r=calculateResults(a);
-  assert.equal(r.missao.valid,14);
-  assert.equal(r.mbl.valid,14);
+  assert.equal(r.missao.valid,15);
+  assert.equal(r.mbl.valid,15);
   assert.equal(r.missao.percent,100);
   assert.equal(r.mbl.percent,100);
 });
@@ -40,7 +41,7 @@ test("não sei exclui e neutro é válido",()=> {
   a[1]=3;
   const r=calculateResults(a);
   assert.equal(r.missao.valid,1);
-  assert.equal(r.missao.unknown,118);
+  assert.equal(r.missao.unknown,119);
   assert.equal(r.missao.percent,0);
   assert.equal(r.mbl.percent,null);
 });
@@ -125,4 +126,29 @@ test("questão 78: texto atualizado e pontuação original intacta",()=>{
  assert.equal(q.dir,1);
  assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(q,i)),[4,2,1,0,-1,-2,-4,0]);
  assert.equal(referenceScore(q),2);
+});
+
+test("questão 120: aborto, categoria MBL, concordância moderada e pesos padrão",()=>{
+  const item=questions.find(q=>q.id===120);
+  assert.equal(item.text,"O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.");
+  assert.equal(item.chapter,"Cultura Política");
+  assert.equal(item.group,"mbl");
+  assert.equal(item.dir,1);
+  assert.deepEqual(Array.from({length:8},(_,answer)=>scoreAnswer(item,answer)),[4,2,1,0,-1,-2,-4,0]);
+  assert.equal(referenceScore(item),2);
+  for(const [answer,points,denominator] of [[0,4,2],[1,2,2],[2,1,2],[3,0,2],[4,-1,2],[5,-2,2],[6,-4,2],[7,0,0]]){
+    const response=Object.fromEntries(questions.map(q=>[q.id,7]));
+    response[120]=answer;
+    const result=calculateResults(response);
+    assert.equal(result.missao.points,points);
+    assert.equal(result.mbl.points,points);
+    assert.equal(result.missao.reference,denominator);
+    assert.equal(result.mbl.reference,denominator);
+  }
+});
+test("adição da questão 120 não altera as 12 curvas anteriores",()=>{
+  const expected119=[5,3,1,0,0,0,0,0];
+  const q119=questions.find(q=>q.id===119);
+  assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(q119,i)),expected119);
+  assert.equal(Object.prototype.hasOwnProperty.call({"6":[-10,-5,-4,0,-3,2,4,0],"9":[-4,-2,0,0,2,4,6,0],"19":[8,4,2,0,1,-2,-5,0],"48":[6,4,1,0,-1,-2,-6,0],"49":[-6,-1,0,0,1,2,1,0],"50":[-6,-5,-2,0,-1,2,3,0],"51":[2,2,2,0,1,0,0,0],"57":[5,4,1,0,-1,-2,-4,0],"106":[-10,-6,-4,0,-3,5,10,0],"110":[-5,-4,-2,0,-1,4,8,0],"111":[-6,-3,-1,0,1,3,6,0],"119":[5,3,1,0,0,0,0,0]},"120"),false);
 });

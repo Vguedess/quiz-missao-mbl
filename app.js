@@ -1,6 +1,6 @@
 import { getBand } from "./lib/bands.js";
 import { initShare } from "./share.js?v=quiz-119-v1";
-import {questions, specialScores} from "./questions.js?v=question-78-v2";
+import {questions, specialScores} from "./questions.js?v=quiz-120-aborto-v1";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[4,2,1,0,-1,-2,-4,0];
 const KEY="radar-ideias-v1";
@@ -33,16 +33,18 @@ function load(){
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
     if(!saved||!Array.isArray(saved.order)||!saved.answers||typeof saved.answers!=="object"||!Number.isInteger(saved.cursor)||!["landing","quiz","result"].includes(saved.phase))return;
     const total=questions.length;
-    // Preserva o progresso de quem iniciou o questionário antes da nova pergunta cultural.
-    const isLegacy=saved.order.length===total-1&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<total)&&new Set(saved.order).size===total-1;
+    // Preserve a randomized order from a past 118/119-question edition.
+    // Any newly added questions are appended, leaving prior answers untouched.
+    const previousTotal=saved.order.length;
+    const isLegacy=previousTotal>=118&&previousTotal<total&&
+      saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<=previousTotal)&&
+      new Set(saved.order).size===previousTotal;
     if(isLegacy){
-      // Preserve every previous answer, and let the participant answer ONLY #119.
-      const previouslyComplete=Object.keys(saved.answers).length===total-1;
-      saved.order.push(total);
-      if(previouslyComplete)saved.cursor=total-1;
+      const previouslyComplete=saved.order.every(id=>saved.answers[id]!==undefined);
+      for(let id=previousTotal+1;id<=total;id++)saved.order.push(id);
+      if(previouslyComplete)saved.cursor=previousTotal;
       if(saved.phase==="result")saved.phase="quiz";
-      // A past submission does NOT include this new question; keep its
-      // existing deletion capability and do not falsely claim a new submission.
+      // Previously recorded data remains immutable and is not resubmitted.
       if(saved.submission==="saved")saved.legacySaved=true;
     }
     const valid=saved.order.length===total&&new Set(saved.order).size===total&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<=total);
@@ -199,7 +201,7 @@ function renderExtras(){
     if(state.submission==="saved"){
       $("deleteParticipation").hidden=false;
       $("saveFeedback").textContent=state.legacySaved
-        ?"Seu registro anterior corresponde à versão de 118 questões. Esta nova resposta não foi enviada ao servidor; você pode excluir o registro antigo abaixo."
+        ?"Seu registro anterior corresponde a uma versão do questionário com menos afirmações. As novas respostas não foram enviadas ao servidor; você pode excluir o registro antigo abaixo."
         :"Resultado registrado anteriormente com seu consentimento.";
     }
     else void submitParticipation();

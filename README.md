@@ -8,10 +8,10 @@ Questionário político independente criado por V. Guedes.
 
 ## Conteúdo
 
-- **119 afirmações** incluídas, embaralhadas por sessão.
-- **105 programáticas** do Livro Amarelo e **14 culturais** relacionadas ao MBL.
-- **Índice Missão:** pontua todas as 119 afirmações.
-- **Índice MBL:** pontua somente as 14 afirmações culturais.
+- **120 afirmações** incluídas, embaralhadas por sessão.
+- **105 programáticas** do Livro Amarelo e **15 culturais** relacionadas ao MBL.
+- **Índice Missão:** pontua todas as 120 afirmações.
+- **Índice MBL:** pontua somente as 15 afirmações culturais.
 - **12 curvas personalizadas** e curvas padrão por direção.
 - A referência de 100% usa exclusivamente a resposta **moderada** (“Concordo” ou “Discordo” alinhado) para cada questão respondida.
 - “Não sei” é excluído de numerador e denominador; “Neutro” entra no denominador com pontuação zero.
@@ -21,6 +21,8 @@ Questionário político independente criado por V. Guedes.
 - Consentimento opcional, desmarcado inicialmente.
 
 A afirmação cultural #119 **“Prendeu, Matou?”** foi integrada ao quiz. A escala exclusiva `[+5, +3, +1, 0, 0, 0, 0, 0]` aplica-se somente a ela; a referência moderada é +3. O arquivo `archive/bonus-question-119.json` mantém a origem histórica dessa regra. Os pesos de #9 a #16 do capítulo 2 não foram alterados.
+
+A questão #120, **“O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.”**, pertence à **Cultura Política (MBL)**, alinhamento em **Concordo** e peso padrão `[+4, +2, +1, 0, -1, -2, -4, 0]` (a última opção é “Não sei”, excluída do cálculo). A referência é +2. Ela entra tanto no índice MBL quanto no índice Missão. A branch `release/v1.0` permanece preservada com o conjunto anterior de 119 questões.
 
 ## Armazenamento **nativo da Vercel**, sem PostgreSQL externo
 

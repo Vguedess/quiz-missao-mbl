@@ -242,3 +242,52 @@ button,.answer{touch-action:manipulation}
   .intro-aside .mini-result:first-child{padding-top:6px}
   .intro-aside .mini-result:last-child{padding-bottom:24px}
 }
+
+
+/* Header com redes sociais e Pix, mobile-first */
+.topbar .header-actions{display:flex;align-items:center;justify-content:flex-end;gap:14px;min-width:0}
+.topbar .header-social{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+.topbar .header-social-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid #414958;border-radius:7px;font:700 12px 'Space Grotesk',sans-serif;letter-spacing:.15px;color:#e7ebf0;white-space:nowrap;transition:border-color .18s,background .18s}
+.topbar .header-social-link:hover{background:#f5dc5b12;border-color:#f5dc5b80}
+.topbar .header-social-icon{font-size:16px;color:var(--yellow);line-height:1}
+.topbar .header-social-icon.youtube{font-size:12px}
+.topbar .header-pix{position:relative;flex:0 0 260px;max-width:260px;min-width:0;display:flex;flex-direction:column;gap:5px;padding:7px 10px 8px;border:1px solid #485164;border-radius:8px;background:#17202e}
+.topbar .header-pix-label{font:800 9px 'Space Grotesk',sans-serif;color:var(--yellow);letter-spacing:1.05px;line-height:1.15;white-space:nowrap}
+.topbar .header-pix-label span{color:#9da8b8;font-weight:600;letter-spacing:.6px}
+.topbar .header-pix-row{display:flex;align-items:center;gap:5px;min-width:0}
+.topbar .pix-key.header-pix-input{display:block;min-width:0;width:100%;flex:1;height:29px;padding:0;border:0;outline:0!important;border-radius:0;background:none;color:#f1f2f4;font:600 12px 'Space Grotesk',sans-serif;text-overflow:clip}
+.topbar .header-pix-copy{height:30px;min-width:32px;padding:0 6px;border:1px solid #f5dc5b60;border-radius:4px;display:flex;justify-content:center;align-items:center;gap:4px;color:var(--yellow);background:#f5dc5b14;font:700 10px 'Space Grotesk',sans-serif;white-space:nowrap}
+.topbar .header-pix-copy:hover,.topbar .header-pix-copy:focus-visible{background:#f5dc5b28;border-color:var(--yellow)}
+.topbar .header-copy-icon{font-size:17px;line-height:1}
+.topbar .header-pix-feedback{display:block;position:absolute;z-index:70;left:0;top:calc(100% + 7px);max-width:min(320px,90vw);min-height:0;padding:8px 10px;border:1px solid #4b655a;border-radius:6px;background:#19271f;color:var(--mint);font:600 11px 'DM Sans',sans-serif;line-height:1.4;box-shadow:0 7px 20px #0008}
+.topbar .header-pix-feedback:empty{display:none}
+@media(max-width:1080px){
+  .topbar .header-actions{gap:8px}
+  .topbar .header-social-link{padding:0 10px;gap:6px}
+  .topbar .header-pix{flex-basis:232px;max-width:232px}
+  .topbar .header-copy-text{display:none}
+}
+@media(max-width:740px){
+  .topbar{position:relative;top:auto;height:auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:8px;row-gap:7px;padding:9px 16px 10px}
+  .topbar .logo{grid-column:1;grid-row:1;max-width:100%;min-width:0}
+  .topbar .logo-title{font-size:clamp(12px,3.35vw,16px);white-space:normal}
+  .topbar .header-actions{display:contents}
+  .topbar .header-social{grid-column:2;grid-row:1;gap:5px}
+  .topbar .header-social-link{width:42px;height:42px;min-height:42px;padding:0;border-radius:7px}
+  .topbar .header-social-text{display:none}
+  .topbar .header-social-icon{font-size:20px}
+  .topbar .header-social-icon.youtube{font-size:14px}
+  .topbar .header-pix{grid-column:1/-1;grid-row:2;max-width:none;width:100%;flex-basis:auto;padding:6px 10px;gap:3px}
+  .topbar .header-pix-label{font-size:9px}
+  .topbar .pix-key.header-pix-input{font-size:15px;height:27px}
+  .topbar .header-pix-copy{min-height:30px}
+  .topbar .header-copy-text{display:inline}
+  .quiz-hud{top:0}
+}
+@media(max-width:360px){
+  .topbar .logo-title{max-width:160px;font-size:12px}
+  .topbar .header-pix-label span{display:none}
+  .topbar .header-copy-text{display:none}
+  .topbar .header-social-link{width:40px;height:40px;min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){.topbar .header-social-link{transition:none}}

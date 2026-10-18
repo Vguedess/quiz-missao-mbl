@@ -117,7 +117,7 @@ $("start").addEventListener("click",start);$("resume").addEventListener("click",
 document.addEventListener("keydown",e=>{if(state.phase!=="quiz"||e.altKey||e.ctrlKey||e.metaKey||["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName))return;if(/^[1-8]$/.test(e.key)){const id=state.order[state.cursor];selectAnswer(Number(e.key)-1,{auto:false});e.preventDefault()}else if(e.key==="ArrowLeft"){previous();e.preventDefault()}else if(e.key==="ArrowRight"&&state.answers[state.order[state.cursor]]!==undefined){next();e.preventDefault()}});
 const PIX_KEY="vguedes.eth@mail3.me";
 async function copyPix(btn){
-  const panel=btn.closest(".pix-panel, .result-creator-pix");
+  const panel=btn.closest(".pix-panel, .result-creator-pix, .header-pix");
   const input=panel.querySelector(".pix-key");
   const status=panel.querySelector(".pix-feedback");
   let copied=false;
@@ -129,8 +129,13 @@ async function copyPix(btn){
   }
   if(copied){
     status.textContent="Chave Pix copiada. Abra o aplicativo do seu banco.";
-    btn.textContent="CHAVE COPIADA ✓";
-    window.setTimeout(()=>{btn.textContent="COPIAR CHAVE PIX";status.textContent=""},3000)
+    const originalContent=btn.innerHTML;
+    if(btn.classList.contains("header-pix-copy")){
+      btn.innerHTML='<span aria-hidden="true">✓</span><span class="header-copy-text">Copiado</span>';
+    }else{
+      btn.textContent="CHAVE COPIADA ✓";
+    }
+    window.setTimeout(()=>{btn.innerHTML=originalContent;status.textContent=""},3000);
   }else{
     input.focus();input.select();
     status.textContent="Selecione e copie a chave Pix manualmente.";

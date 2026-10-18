@@ -2,7 +2,11 @@
 
 Projeto independente de questionário de afinidade política.
 
-**Site:** https://quiz-missao-mbl.vercel.app/
+**Site conectado ao GitHub:** https://quiz-missao-mbl-github.vercel.app/
+
+**Criado por V. Guedes.** Canal: https://www.youtube.com/@vguedess · X: https://x.com/vguedessa.
+
+O site evita informar antecipadamente o total de afirmações. Oferece espaço para apoio voluntário por Pix com botão de copiar chave. As quantidades abaixo são documentação interna para manutenção.
 
 ## Conteúdo
 
@@ -33,6 +37,10 @@ python -m http.server 8080
 ```
 
 Abra `http://localhost:8080`.
+
+## Apoio voluntário
+
+Chave Pix disponibilizada pelo criador: `vguedes.eth@mail3.me`. O apoio é opcional e não influencia a pontuação.
 
 ## Aviso
 

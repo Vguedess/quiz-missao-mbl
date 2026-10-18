@@ -8,10 +8,10 @@ Questionário político independente criado por V. Guedes.
 
 ## Conteúdo
 
-- **121 afirmações** incluídas, embaralhadas por sessão.
-- **105 programáticas** do Livro Amarelo e **16 culturais** relacionadas ao MBL.
-- **Índice Missão:** pontua todas as 121 afirmações.
-- **Índice MBL:** pontua somente as 16 afirmações culturais.
+- **123 afirmações** incluídas, embaralhadas por sessão.
+- **105 programáticas** do Livro Amarelo e **18 culturais** relacionadas ao MBL.
+- **Índice Missão:** pontua todas as 123 afirmações.
+- **Índice MBL:** pontua somente as 18 afirmações culturais.
 - **12 curvas personalizadas**, preservadas. A escala padrão é `[+3, +2, +1, 0, -1, -2, -3, 0]` (multiplicada pela direção da questão).
 - A referência de 100% usa exclusivamente a resposta **moderada** (“Concordo” ou “Discordo” alinhado) para cada questão respondida.
 - “Não sei” é excluído de numerador e denominador; “Neutro” entra no denominador com pontuação zero.
@@ -26,13 +26,18 @@ A questão #120, **“O aborto deve ser permitido apenas em casos de estupro, ri
 
 A questão #121, **“Quem comete crime hediondo deve ser julgado e punido como adulto, independentemente se tem 10, 14 ou 20 anos de idade.”**, integra **Cultura Política (MBL)**, com resposta de referência **Concordo** (`dir:1`) e peso padrão `[+3, +2, +1, 0, -1, -2, -3, 0]`. A referência é +2 e a afirmação contribui para ambos os índices. Nenhuma curva especial existente foi alterada.
 
+As questões **#122 — Pena de morte** e **#123 — Prisão perpétua** integram a **Cultura Política (MBL)**, ambas com resposta de referência **Concordo** (`dir:1`), escala padrão `[+3, +2, +1, 0, -1, -2, -3, 0]` e referência de +2 pontos por questão. Ambas entram nos índices Missão e MBL. São redações para pesquisa de opinião, não citações literais.
+
+- **#122:** “A pena de morte deve ser permitida no Brasil para pessoas condenadas por crimes extremamente graves, como assassinato e estupro de crianças.”
+- **#123:** “Pessoas condenadas por crimes extremamente graves, como estupro e feminicídio, devem poder receber prisão perpétua, sem direito à liberdade condicional.”
+
 ## Pergunta 0 e nova escala padrão
 
-Após escolher a identificação e o consentimento, o participante vê uma tela introdutória denominada **Questão 0**, antes das 121 questões. Ela é apenas orientativa e não entra no total de questões, nem altera a ordem aleatória ou qualquer pontuação. É possível voltar a ela pela primeira afirmação.
+Após escolher a identificação e o consentimento, o participante vê uma tela introdutória denominada **Questão 0**, antes das 123 questões. Ela é apenas orientativa e não entra no total de questões, nem altera a ordem aleatória ou qualquer pontuação. É possível voltar a ela pela primeira afirmação.
 
 Na escala padrão, **Concordo/Discordo** alinhado é a referência de 100% (+2 pontos), enquanto **Concordo totalmente/Discordo totalmente** alinhado vale **150%** por questão (+3 pontos). A combinação de metade das respostas extremas e metade moderadas seria 125% quando se considera apenas questões padrão alinhadas; questões com curvas especiais podem alterar o resultado. **Neutro** = 0, contabilizado no denominador. **Não sei** = excluído de numerador e denominador.
 
-A partir desta atualização, participações novas com a pontuação alterada são registradas em `quiz-participations/v2/`; a média pública considera apenas essa versão, sem misturar resultados antigos. Registros legados `v1` são preservados e seguem disponíveis para exclusão com o identificador original do participante. Tentativas já iniciadas continuam no ponto em que pararam. A versão de referência do código anterior à mudança permanece na branch `release/v1.0`.
+A inclusão das questões #122 e #123 cria a versão 3 do questionário. As novas participações são registradas em `quiz-participations/v3/`, e a média pública considera somente essa versão, sem misturar resultados de questionários com quantidades diferentes de questões. Registros anteriores de `v1` e `v2` permanecem preservados e disponíveis para exclusão pelo identificador original. Tentativas antigas recebem as novas questões ao final sem perder as respostas anteriores; participações já gravadas não são reenviadas automaticamente. A branch `release/v1.0` permanece preservada.
 
 ## Armazenamento **nativo da Vercel**, sem PostgreSQL externo
 

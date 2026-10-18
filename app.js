@@ -1,6 +1,6 @@
 import { getBand } from "./lib/bands.js";
-import { initShare } from "./share.js?v=score-v2";
-import {questions, specialScores} from "./questions.js?v=quiz-120-aborto-v1";
+import { initShare } from "./share.js?v=quiz-121-v1";
+import {questions, specialScores} from "./questions.js?v=quiz-121-v1";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[3,2,1,0,-1,-2,-3,0];
 const KEY="radar-ideias-v1";
@@ -33,7 +33,7 @@ function load(){
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
     if(!saved||!Array.isArray(saved.order)||!saved.answers||typeof saved.answers!=="object"||!Number.isInteger(saved.cursor)||!["landing","guide","quiz","result"].includes(saved.phase))return;
     const total=questions.length;
-    // Preserve a randomized order from a past 118/119-question edition.
+    // Preserve a randomized order from any supported past 118–120-question edition.
     // Any newly added questions are appended, leaving prior answers untouched.
     const previousTotal=saved.order.length;
     const isLegacy=previousTotal>=118&&previousTotal<total&&
@@ -205,7 +205,7 @@ function renderExtras(){
     if(state.submission==="saved"){
       $("deleteParticipation").hidden=false;
       $("saveFeedback").textContent=state.legacySaved
-        ?"Seu registro foi feito com a escala anterior e permanece preservado, mas não entra nas médias da nova escala. Você pode excluir o registro antigo abaixo."
+        ?"Seu registro anterior permanece preservado. As respostas às novas questões e os resultados recalculados não foram reenviados automaticamente; você pode excluir o registro antigo abaixo."
         :"Resultado registrado anteriormente com seu consentimento.";
     }
     else void submitParticipation();

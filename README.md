@@ -8,10 +8,10 @@ Questionário político independente criado por V. Guedes.
 
 ## Conteúdo
 
-- **120 afirmações** incluídas, embaralhadas por sessão.
-- **105 programáticas** do Livro Amarelo e **15 culturais** relacionadas ao MBL.
-- **Índice Missão:** pontua todas as 120 afirmações.
-- **Índice MBL:** pontua somente as 15 afirmações culturais.
+- **121 afirmações** incluídas, embaralhadas por sessão.
+- **105 programáticas** do Livro Amarelo e **16 culturais** relacionadas ao MBL.
+- **Índice Missão:** pontua todas as 121 afirmações.
+- **Índice MBL:** pontua somente as 16 afirmações culturais.
 - **12 curvas personalizadas**, preservadas. A escala padrão é `[+3, +2, +1, 0, -1, -2, -3, 0]` (multiplicada pela direção da questão).
 - A referência de 100% usa exclusivamente a resposta **moderada** (“Concordo” ou “Discordo” alinhado) para cada questão respondida.
 - “Não sei” é excluído de numerador e denominador; “Neutro” entra no denominador com pontuação zero.
@@ -24,9 +24,11 @@ A afirmação cultural #119 **“Prendeu, Matou?”** foi integrada ao quiz. A e
 
 A questão #120, **“O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.”**, pertence à **Cultura Política (MBL)**, alinhamento em **Concordo** e peso padrão `[+3, +2, +1, 0, -1, -2, -3, 0]` (a última opção é “Não sei”, excluída do cálculo). A referência é +2. Ela entra tanto no índice MBL quanto no índice Missão. A branch `release/v1.0` permanece preservada com o conjunto anterior de 119 questões.
 
+A questão #121, **“Quem comete crime hediondo deve ser julgado e punido como adulto, independentemente se tem 10, 14 ou 20 anos de idade.”**, integra **Cultura Política (MBL)**, com resposta de referência **Concordo** (`dir:1`) e peso padrão `[+3, +2, +1, 0, -1, -2, -3, 0]`. A referência é +2 e a afirmação contribui para ambos os índices. Nenhuma curva especial existente foi alterada.
+
 ## Pergunta 0 e nova escala padrão
 
-Após escolher a identificação e o consentimento, o participante vê uma tela introdutória denominada **Questão 0**, antes das 120 questões. Ela é apenas orientativa e não entra no total de questões, nem altera a ordem aleatória ou qualquer pontuação. É possível voltar a ela pela primeira afirmação.
+Após escolher a identificação e o consentimento, o participante vê uma tela introdutória denominada **Questão 0**, antes das 121 questões. Ela é apenas orientativa e não entra no total de questões, nem altera a ordem aleatória ou qualquer pontuação. É possível voltar a ela pela primeira afirmação.
 
 Na escala padrão, **Concordo/Discordo** alinhado é a referência de 100% (+2 pontos), enquanto **Concordo totalmente/Discordo totalmente** alinhado vale **150%** por questão (+3 pontos). A combinação de metade das respostas extremas e metade moderadas seria 125% quando se considera apenas questões padrão alinhadas; questões com curvas especiais podem alterar o resultado. **Neutro** = 0, contabilizado no denominador. **Não sei** = excluído de numerador e denominador.
 

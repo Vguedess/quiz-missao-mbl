@@ -5,14 +5,15 @@ import { scoreAnswer, calculateResults, validateCompleteAnswers, referenceScore 
 import { getBand } from "../lib/bands.js";
 import { resultPath, scoreFromPath, validAttemptId, PREFIX, LEGACY_PREFIX } from "../lib/blob-store.js";
 
-test("120 afirmações, 105 programáticas, 15 culturais, inclusive #119 e #120",()=> {
-  assert.equal(questions.length,120);
+test("121 afirmações, 105 programáticas, 16 culturais, inclusive #119, #120 e #121",()=> {
+  assert.equal(questions.length,121);
   assert.equal(questions.filter(q=>q.group==="missao").length,105);
-  assert.equal(questions.filter(q=>q.group==="mbl").length,15);
-  assert.equal(new Set(questions.map(q=>q.id)).size,120);
+  assert.equal(questions.filter(q=>q.group==="mbl").length,16);
+  assert.equal(new Set(questions.map(q=>q.id)).size,121);
   assert.equal(questions[25].dir,-1);
   assert.deepEqual(questions[118],{id:119,text:"Prendeu, Matou?",dir:1,chapter:"Cultura Política",group:"mbl"});
   assert.deepEqual(questions[119],{id:120,text:"O aborto deve ser permitido apenas em casos de estupro, risco de morte para a gestante ou anencefalia fetal.",dir:1,chapter:"Cultura Política",group:"mbl"});
+  assert.deepEqual(questions[120],{id:121,text:"Quem comete crime hediondo deve ser julgado e punido como adulto, independentemente se tem 10, 14 ou 20 anos de idade.",dir:1,chapter:"Cultura Política",group:"mbl"});
 });
 test("pontuações especiais são preservadas",()=> {
   assert.equal(referenceScore(questions[8]),4);
@@ -31,8 +32,8 @@ test("MBL contribui para Missão, mas programa não contribui para MBL",()=> {
   const a=Object.fromEntries(questions.map(q=>[q.id,7]));
   for(const q of questions.filter(q=>q.group==="mbl"))a[q.id]=q.dir===1?1:5;
   const r=calculateResults(a);
-  assert.equal(r.missao.valid,15);
-  assert.equal(r.mbl.valid,15);
+  assert.equal(r.missao.valid,16);
+  assert.equal(r.mbl.valid,16);
   assert.equal(r.missao.percent,100);
   assert.equal(r.mbl.percent,100);
 });
@@ -41,7 +42,7 @@ test("não sei exclui e neutro é válido",()=> {
   a[1]=3;
   const r=calculateResults(a);
   assert.equal(r.missao.valid,1);
-  assert.equal(r.missao.unknown,119);
+  assert.equal(r.missao.unknown,120);
   assert.equal(r.missao.percent,0);
   assert.equal(r.mbl.percent,null);
 });
@@ -174,4 +175,26 @@ test("histórico privado: novos registros separados sem inviabilizar leitura e e
  assert.equal(LEGACY_PREFIX,"quiz-participations/v1/");
  assert.deepEqual(scoreFromPath(s1),{mission:100,mbl:100});
  assert.deepEqual(scoreFromPath(s2),{mission:150,mbl:150});
+});
+
+test("questão 121: crime hediondo sem idade mínima integra MBL com concordância e pesos padrão",()=>{
+ const item=questions.find(q=>q.id===121);
+ assert.deepEqual(item,{
+   id:121,
+   text:"Quem comete crime hediondo deve ser julgado e punido como adulto, independentemente se tem 10, 14 ou 20 anos de idade.",
+   dir:1,
+   chapter:"Cultura Política",
+   group:"mbl"
+ });
+ assert.deepEqual(Array.from({length:8},(_,a)=>scoreAnswer(item,a)),[3,2,1,0,-1,-2,-3,0]);
+ assert.equal(referenceScore(item),2);
+ const answers=Object.fromEntries(questions.map(q=>[q.id,7]));
+ for(const [answer,points,reference] of [[0,3,2],[1,2,2],[2,1,2],[3,0,2],[4,-1,2],[5,-2,2],[6,-3,2],[7,0,0]]){
+   answers[121]=answer;
+   const result=calculateResults(answers);
+   assert.equal(result.missao.points,points);
+   assert.equal(result.mbl.points,points);
+   assert.equal(result.missao.reference,reference);
+   assert.equal(result.mbl.reference,reference);
+ }
 });

@@ -153,3 +153,20 @@ button,.answer{touch-action:manipulation}
   .mobile-preferences{min-height:31px;margin-bottom:7px}
 }
 @media(prefers-reduced-motion:reduce){.answers .answer.answer-picked{animation:none}.answers .answer{transition:none}}
+
+/* Responsive hero headline: deliberate line breaks, no unintended wrapping. */
+.intro-main{container-type:inline-size}
+.intro-main .intro-headline{display:flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:100%;width:100%;margin:28px 0 28px;font-family:'Space Grotesk',sans-serif;line-height:1.06;font-weight:700;letter-spacing:-.045em}
+.intro-headline-top{display:block;white-space:nowrap;font-size:clamp(17px,5cqw,39px);line-height:1.22;color:#f5f4f0;letter-spacing:-.045em}
+.intro-headline-main{display:block;white-space:nowrap;color:var(--yellow);font-size:clamp(30px,8cqw,66px);line-height:1.08;font-weight:500;font-style:normal;letter-spacing:-.045em}
+.intro-headline-subject,.intro-headline-question{display:inline}
+@media(max-width:740px){
+ .intro-main .intro-headline{gap:6px;margin:22px 0 18px}
+ .intro-headline-top{font-size:clamp(17px,5cqw,39px)}
+ .intro-headline-main{font-size:clamp(30px,8cqw,66px)}
+}
+@media(max-width:420px){
+ .intro-headline-main{font-size:clamp(38px,11vw,49px);white-space:normal;line-height:1.10}
+ .intro-headline-subject,.intro-headline-question{display:block;white-space:nowrap}
+ .intro-headline-verb{text-transform:uppercase}
+}

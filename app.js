@@ -1,6 +1,6 @@
 import { getBand } from "./lib/bands.js";
 import { initShare } from "./share.js?v=quiz-119-v1";
-import {questions, specialScores} from "./questions.js?v=quiz-119-v1";
+import {questions, specialScores} from "./questions.js?v=question-78-v2";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[4,2,1,0,-1,-2,-4,0];
 const KEY="radar-ideias-v1";

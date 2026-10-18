@@ -116,3 +116,13 @@ test("as 11 curvas customizadas existentes permanecem inalteradas",()=>{
   assert.deepEqual(Array.from({length:8},(_,choice)=>scoreAnswer(item,choice)).map(n=>n===0?0:n),expected);
  }
 });
+
+test("questão 78: texto atualizado e pontuação original intacta",()=>{
+ const q=questions.find(q=>q.id===78);
+ assert.equal(q.text,"A reforma agrária é uma política legítima que o Brasil deveria colocar em prática");
+ assert.equal(q.chapter,"Celeiro do Mundo");
+ assert.equal(q.group,"missao");
+ assert.equal(q.dir,1);
+ assert.deepEqual(Array.from({length:8},(_,i)=>scoreAnswer(q,i)),[4,2,1,0,-1,-2,-4,0]);
+ assert.equal(referenceScore(q),2);
+});

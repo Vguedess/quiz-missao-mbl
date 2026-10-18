@@ -10,12 +10,12 @@ O site evita informar antecipadamente o total de afirmações. Oferece espaço p
 
 ## Conteúdo
 
-- **118 afirmações** apresentadas em ordem aleatória.
+- **119 afirmações** apresentadas em ordem aleatória.
 - **105 questões programáticas** com base nos capítulos do *Livro Amarelo*.
-- **13 questões de cultura política** associadas ao universo MBL.
+- **14 questões de cultura política** associadas ao universo MBL, incluindo a pergunta especial “Prendeu, Matou?”.
 - Resultado **Missão**: considera as 118 afirmações.
 - Resultado **MBL**: considera somente as 13 questões culturais.
-- **11 escalas personalizadas**, além da pontuação padrão.
+- **12 escalas personalizadas**, além da pontuação padrão. A questão cultural 119 utiliza `[5, 3, 1, 0, 0, 0, 0, 0]`, na ordem das oito respostas.
 
 ## Como se calcula a pontuação
 

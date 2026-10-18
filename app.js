@@ -13,7 +13,24 @@ function goTop(){window.scrollTo({top:0,behavior:"instant"})}
 let state={order:[],answers:{},cursor:0,phase:"landing"};
 const $=id=>document.getElementById(id);
 function shuffle(){const a=questions.map(q=>q.id);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function load(){try{const data=JSON.parse(localStorage.getItem(KEY)||"null");if(data&&Array.isArray(data.order)&&data.order.length===118&&new Set(data.order).size===118&&typeof data.answers==="object"&&Number.isInteger(data.cursor)&&data.cursor>=0&&data.cursor<118&&["landing","quiz","result"].includes(data.phase))state=data}catch{}}
+function load(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(!saved||!Array.isArray(saved.order)||!saved.answers||typeof saved.answers!=="object"||!Number.isInteger(saved.cursor)||!["landing","quiz","result"].includes(saved.phase))return;
+    const total=questions.length;
+    // Preserva o progresso de quem iniciou o questionário antes da nova pergunta cultural.
+    const isLegacy=saved.order.length===total-1&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<total)&&new Set(saved.order).size===total-1;
+    if(isLegacy){
+      saved.order.push(total);
+      if(saved.phase==="result"){saved.phase="quiz";saved.cursor=total-1;}
+    }
+    const valid=saved.order.length===total&&new Set(saved.order).size===total&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<=total);
+    if(valid&&saved.cursor>=0&&saved.cursor<total){
+      state=saved;
+      if(isLegacy)persist();
+    }
+  }catch{}
+}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}}
 function reveal(phase){clearAdvance();["landing","quiz","result"].forEach(id=>$(id).hidden=id!==phase);state.phase=phase;persist();window.scrollTo({top:0,behavior:"instant"})}
 function qById(id){return questions[id-1]}
@@ -90,7 +107,7 @@ function renderQuestion(){
     box.append(btn);
   });
 }
-function next(){clearAdvance();const id=state.order[state.cursor];if(state.answers[id]===undefined)return;if(state.cursor===117){if(Object.keys(state.answers).length!==118)return;reveal("result");renderResults();return}state.cursor++;persist();renderQuestion()}
+function next(){clearAdvance();const id=state.order[state.cursor];if(state.answers[id]===undefined)return;if(state.cursor===questions.length-1){if(Object.keys(state.answers).length!==questions.length)return;reveal("result");renderResults();return}state.cursor++;persist();renderQuestion()}
 function previous(){clearAdvance();if(state.cursor>0){state.cursor--;persist();renderQuestion()}}
 function renderResults(){const m=calculate("missao"),b=calculate("mbl");$("missaoScore").textContent=pct(m.value);$("mblScore").textContent=pct(b.value);$("missaoCoverage").textContent="Respostas consideradas: "+Math.round(m.known/m.total*100)+"%"+(m.unknown?" · “Não sei” desconsiderado":"");$("mblCoverage").textContent="Respostas consideradas: "+Math.round(b.known/b.total*100)+"%"+(b.unknown?" · “Não sei” desconsiderado":"");const names=[...new Set(questions.map(q=>q.chapter))];const table=$("chapters");table.replaceChildren();for(const name of names){const subset=questions.filter(q=>q.chapter===name);let actual=0,target=0,known=0,unknown=0;for(const q of subset){const a=state.answers[q.id];if(a===7){unknown++;continue}if(a===undefined)continue;actual+=score(q,a);target+=reference(q);known++}const row=document.createElement("div");row.className="chapter-row";const title=document.createElement("div");title.className="chapter-name";title.textContent=name;const value=document.createElement("div");value.className="chapter-score";value.textContent=pct(target?actual/target*100:null);const sub=document.createElement("div");sub.className="chapter-small";sub.textContent=Math.round(100*known/subset.length)+"% das respostas consideradas"+(unknown?" · “Não sei” excluído":"");row.append(title,value,sub);table.append(row)}}
 function download(){const result={method:"Pontuação real ÷ referência moderada × 100",createdAt:new Date().toISOString(),indices:{missao:calculate("missao"),mbl:calculate("mbl")},answers:state.order.map((id,order)=>({questionId:id,order:order+1,chapter:qById(id).chapter,group:qById(id).group,answer:labels[state.answers[id]],points:score(qById(id),state.answers[id])}))};const blob=new Blob([JSON.stringify(result,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="meu-resultado-radar-de-ideias.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),200)}
@@ -124,4 +141,4 @@ document.querySelectorAll(".pix-key").forEach(input=>input.addEventListener("foc
 
 window.addEventListener("resize",()=>{if(state.phase==="quiz")requestAnimationFrame(fitQuestionText)},{passive:true});
 if(document.fonts?.ready)document.fonts.ready.then(()=>{if(state.phase==="quiz")fitQuestionText()});
-load();if(state.order.length===118){$("resume").hidden=false;if(state.phase==="quiz"){reveal("quiz");renderQuestion()}else if(state.phase==="result"){reveal("result");renderResults()}}
+load();if(state.order.length===questions.length){$("resume").hidden=false;if(state.phase==="quiz"){reveal("quiz");renderQuestion()}else if(state.phase==="result"){reveal("result");renderResults()}}

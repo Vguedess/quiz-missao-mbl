@@ -1,0 +1,20 @@
+{
+  "question": {
+    "id": 119,
+    "text": "Prendeu, Matou?",
+    "dir": 1,
+    "chapter": "Cultura Política",
+    "group": "mbl"
+  },
+  "curve": [
+    5,
+    3,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "status": "Não integra o questionário aprovado de 118 afirmações. Mantido como histórico, sem pontuação."
+}

@@ -1,5 +1,5 @@
 import { getBand } from "./lib/bands.js";
-import { initShare } from "./share.js";
+import { initShare } from "./share.js?v=result-layout-v5";
 import {questions, specialScores} from "./questions.js";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[4,2,1,0,-1,-2,-4,0];
@@ -18,6 +18,8 @@ function restoreResultTop(){
   if(document.getElementById("result")?.hidden)return;
   window.scrollTo({top:0,behavior:"instant"});
   requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"instant"}));
+  // Mobile engines can apply saved scroll after DOMContentLoaded.
+  if(document.readyState!=="complete")window.addEventListener("load",()=>window.scrollTo({top:0,behavior:"instant"}),{once:true});
 }
 if("scrollRestoration" in history)history.scrollRestoration="manual";
 let state={order:[],answers:{},cursor:0,phase:"landing"};

@@ -169,45 +169,45 @@ export function initShare({readState,patchState,goHome}){
  function render(missao,mbl){
   lastResult={missao,mbl};
   const band=getBand(missao.value);
-  $("shareMissionScore").textContent=missao.value===null?"—":new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1}).format(missao.value)+"%";
-  $("shareMblScore").textContent=mbl.value===null?"—":new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1}).format(mbl.value)+"%";
-  $("shareBandTitle").textContent=band?SHORT_HEADLINES[band.id]:"RESULTADO INDEFINIDO";
-  $("shareBandCaption").textContent=band?.description||"Não foi possível calcular o índice com as respostas disponíveis.";
+  $("affinityMissionScore").textContent=missao.value===null?"—":new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1}).format(missao.value)+"%";
+  $("affinityMblScore").textContent=mbl.value===null?"—":new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1}).format(mbl.value)+"%";
+  $("affinityBandTitle").textContent=band?.title||"Resultado não calculável";
+  $("affinityBandCaption").textContent=band?.description||"Não foi possível calcular o índice com as respostas disponíveis.";
   const mblInfo=mblInterpretation(mbl.value);
   $("mblBandTitle").textContent=mblInfo[0];$("mblBandDescription").textContent=mblInfo[1];
   const p=profile();
-  $("shareProfile").textContent=p?.value||"RESULTADO ANÔNIMO";
-  $("shareAddHandle").hidden=Boolean(p);
-  const img=$("shareMissionImage");
+  $("affinityProfile").textContent=p?.value||"RESULTADO ANÔNIMO";
+  $("affinityAddHandle").hidden=Boolean(p);
+  const img=$("affinityMissionImage");
   img.onerror=()=>{img.onerror=null;img.src="/results/mission-sigil.svg"};
   // Original photographs are optional. Only use them if the corresponding file exists.
   img.src=band?.image||"/results/mission-sigil.svg";
  }
  async function exportPNG(share=false){
   if(!lastResult)return;
-  const button=share?$("shareImageButton"):$("downloadImage");
-  button.disabled=true;$("shareFeedback").textContent="Preparando imagem em alta resolução…";
+  const button=share?$("affinityImageButton"):$("downloadImage");
+  button.disabled=true;$("affinityFeedback").textContent="Preparando imagem em alta resolução…";
   try{
     const canvas=await makeCanvas(lastResult.missao,lastResult.mbl,profile());
     const blob=await toBlob(canvas);
     const file=new File([blob],"resultado-missao-mbl.png",{type:"image/png"});
     if(share&&navigator.canShare?.({files:[file]})&&navigator.share){
-      try{await navigator.share({files:[file],title:"Meu resultado no Quiz Missão/MBL"});$("shareFeedback").textContent="Compartilhamento iniciado.";return}
-      catch(err){if(err?.name==="AbortError"){$("shareFeedback").textContent="Compartilhamento cancelado.";return}}
+      try{await navigator.share({files:[file],title:"Meu resultado no Quiz Missão/MBL"});$("affinityFeedback").textContent="Compartilhamento iniciado.";return}
+      catch(err){if(err?.name==="AbortError"){$("affinityFeedback").textContent="Compartilhamento cancelado.";return}}
     }
     saveBlob(blob);
-    $("shareFeedback").textContent="Imagem PNG de 1080 × 1350 salva para compartilhar.";
+    $("affinityFeedback").textContent="Imagem PNG de 1080 × 1350 salva para compartilhar.";
   }catch(error){
     console.error("share image error",error);
-    $("shareFeedback").textContent="Não foi possível gerar a imagem neste navegador. Você pode tirar um print do cartão acima.";
+    $("affinityFeedback").textContent="Não foi possível gerar a imagem neste navegador. Você pode tirar um print do cartão acima.";
   }finally{button.disabled=false}
  }
  $("saveHomeIdentity").addEventListener("click",saveHandle);
  $("editHomeIdentity").addEventListener("click",()=>{$("homeIdentityInputs").hidden=false;$("editHomeIdentity").hidden=true;$("homeIdentityValue").focus()});
  $("homeIdentityValue").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();saveHandle()}});
  $("homeLogo").addEventListener("click",goHome);
- $("shareAddHandle").addEventListener("click",()=>{goHome();$("homeIdentityInputs").hidden=false;$("editHomeIdentity").hidden=true;$("homeIdentityValue").focus()});
+ $("affinityAddHandle").addEventListener("click",()=>{goHome();$("homeIdentityInputs").hidden=false;$("editHomeIdentity").hidden=true;$("homeIdentityValue").focus()});
  $("downloadImage").addEventListener("click",()=>void exportPNG(false));
- $("shareImageButton").addEventListener("click",()=>void exportPNG(true));
+ $("affinityImageButton").addEventListener("click",()=>void exportPNG(true));
  return {refreshHome,prefillOnboard,render};
 }

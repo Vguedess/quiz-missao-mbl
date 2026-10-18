@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS quiz_results (
   mbl_points NUMERIC NOT NULL,
   mbl_reference NUMERIC NOT NULL,
   mbl_percent NUMERIC,
-  mission_valid SMALLINT NOT NULL CHECK(mission_valid BETWEEN 0 AND 119),
-  mbl_valid SMALLINT NOT NULL CHECK(mbl_valid BETWEEN 0 AND 14),
+  mission_valid SMALLINT NOT NULL CHECK(mission_valid BETWEEN 0 AND 118),
+  mbl_valid SMALLINT NOT NULL CHECK(mbl_valid BETWEEN 0 AND 13),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_quiz_results_created ON quiz_results (created_at DESC);

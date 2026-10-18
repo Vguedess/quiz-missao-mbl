@@ -1,6 +1,6 @@
 import { getBand } from "./lib/bands.js";
-import { initShare } from "./share.js?v=quiz-121-v1";
-import {questions, specialScores} from "./questions.js?v=quiz-121-v1";
+import { initShare } from "./share.js?v=quiz-123-v1";
+import {questions, specialScores} from "./questions.js?v=quiz-123-v1";
 const labels=["Concordo totalmente","Concordo","Concordo parcialmente","Neutro","Discordo parcialmente","Discordo","Discordo totalmente","Não sei"];
 const base=[3,2,1,0,-1,-2,-3,0];
 const KEY="radar-ideias-v1";
@@ -33,7 +33,7 @@ function load(){
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
     if(!saved||!Array.isArray(saved.order)||!saved.answers||typeof saved.answers!=="object"||!Number.isInteger(saved.cursor)||!["landing","guide","quiz","result"].includes(saved.phase))return;
     const total=questions.length;
-    // Preserve a randomized order from any supported past 118–120-question edition.
+    // Preserve a randomized order from any supported past 118–121-question edition.
     // Any newly added questions are appended, leaving prior answers untouched.
     const previousTotal=saved.order.length;
     const isLegacy=previousTotal>=118&&previousTotal<total&&
@@ -49,9 +49,9 @@ function load(){
     }
     const valid=saved.order.length===total&&new Set(saved.order).size===total&&saved.order.every(id=>Number.isInteger(id)&&id>=1&&id<=total);
     if(valid&&saved.cursor>=0&&saved.cursor<total){
-      const oldScoring=saved.scoreVersion!==2;
+      const oldScoring=saved.scoreVersion!==3;
       if(oldScoring&&saved.submission==="saved")saved.legacySaved=true;
-      saved.scoreVersion=2;
+      saved.scoreVersion=3;
       state=saved;
       if(isLegacy||oldScoring)persist();
     }
@@ -68,7 +68,7 @@ function start(){
   clearAdvance();
   const identityType=$("identityType").value, identityValue=$("identityValue").value.trim();
   if(identityType!=="anonymous"&&(!identityValue||identityValue.length>60)){$("identityValue").focus();return}
-  state={order:shuffle(),answers:{},cursor:0,phase:"guide",guideSeen:false,scoreVersion:2,consent:$("dataConsent").checked,identityType,identityValue:identityType==="anonymous"?"":identityValue,attemptId:crypto.randomUUID(),submission:"idle"};
+  state={order:shuffle(),answers:{},cursor:0,phase:"guide",guideSeen:false,scoreVersion:3,consent:$("dataConsent").checked,identityType,identityValue:identityType==="anonymous"?"":identityValue,attemptId:crypto.randomUUID(),submission:"idle"};
   reveal("guide");
 }
 const answerTones=["full-agree","agree","partial-agree","neutral","partial-disagree","disagree","full-disagree","unknown"];

@@ -148,7 +148,7 @@ function renderStatsNode(values){
 }
 async function updateParticipantStats(){
   try{
-    const response=await fetch("/api/stats",{cache:"no-store"});
+    const response=await fetch("/api/stats");
     if(!response.ok)throw Error("unavailable");
     const body=await response.json();
     if(!body.available)throw Error("unavailable");
@@ -163,6 +163,7 @@ async function submitParticipation(){
     const result=await r.json().catch(()=>({}));
     if(!r.ok||!result.saved)throw Error(result.error||"erro");
     state.submission="saved";persist();
+    $("deleteParticipation").hidden=false;
     $("saveFeedback").textContent="Resultado registrado com seu consentimento.";
     void updateParticipantStats();
   }catch{
@@ -174,10 +175,31 @@ function renderExtras(){
   renderEditorial();
   void updateParticipantStats();
   if(state.consent){
-    if(state.submission==="saved")$("saveFeedback").textContent="Resultado registrado anteriormente com seu consentimento.";
+    if(state.submission==="saved"){$("deleteParticipation").hidden=false;$("saveFeedback").textContent="Resultado registrado anteriormente com seu consentimento.";}
     else void submitParticipation();
   }else $("saveFeedback").textContent="Você não autorizou armazenar as respostas. Seu resultado permanece neste dispositivo.";
 }
+
+async function removeMyParticipation(){
+  if(!state.attemptId||state.submission!=="saved")return;
+  if(!window.confirm("Confirma a exclusão da sua participação e das respostas armazenadas na Vercel? Esta operação não pode ser desfeita."))return;
+  const btn=$("deleteParticipation");
+  btn.disabled=true;
+  $("saveFeedback").textContent="Solicitando a exclusão da participação...";
+  try{
+    const response=await fetch("/api/delete",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({attemptId:state.attemptId})});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok||!result.deleted)throw Error("Falha ao apagar registro");
+    state.submission="deleted";state.consent=false;state.identityValue="";persist();
+    btn.hidden=true;
+    $("saveFeedback").textContent="Participação excluída do armazenamento. Suas respostas permanecem apenas neste dispositivo.";
+    void updateParticipantStats();
+  }catch{
+    $("saveFeedback").textContent="Não foi possível excluir o registro agora. Tente novamente.";
+  }finally{btn.disabled=false}
+}
+$("deleteParticipation").addEventListener("click",()=>void removeMyParticipation());
+
 $("identityType").addEventListener("change",syncIdentityField);
 $("onboardBack").addEventListener("click",()=>reveal("landing"));
 $("onboardStart").addEventListener("click",start);
